@@ -1,0 +1,5 @@
+<resources>
+    <color name="colorEditLabel">#0e3687</color>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBo3odGwOHYFDg_vyhQvrLrJXtOoJh2cL0</string>
+</resources>

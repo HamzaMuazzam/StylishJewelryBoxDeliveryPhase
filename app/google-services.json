@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "264925527832",
+    "firebase_url": "https://jewelrydeliveryphase.firebaseio.com",
+    "project_id": "jewelrydeliveryphase",
+    "storage_bucket": "jewelrydeliveryphase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264925527832:android:1bd74f9a99bc4749ce286d",
+        "android_client_info": {
+          "package_name": "com.example.stylishjewelryboxadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264925527832-klrojkal7g4ch0hsu1ns9cm33m9r326r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stylishjewelryboxadmin",
+            "certificate_hash": "e25b053ef9d3afe60063ee4caf9123ac57e1826f"
+          }
+        },
+        {
+          "client_id": "264925527832-kna8idk470chf7lem5dap82q3ki3ls9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk2EkNNvcqaG7rnFC0F_O9quoZD5ONEdY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264925527832-kna8idk470chf7lem5dap82q3ki3ls9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
