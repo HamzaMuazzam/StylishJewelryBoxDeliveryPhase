@@ -12,8 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1">
 
         <ImageView
             android:layout_width="100dp"
@@ -21,6 +20,7 @@
             android:layout_centerInParent="true"
             android:src="@drawable/ic_person_black_24dp" />
     </RelativeLayout>
+
 
 
     <LinearLayout
@@ -43,8 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="User Name"
-                android:textColor="#0e3687"
-                />
+                android:textColor="#0e3687" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -104,34 +103,18 @@
             android:background="@drawable/button_corner"
             android:elevation="5dp"
             android:onClick="singUp"
-            android:text="Sing Up"
+            android:text="Sign Up"
             android:textAlignment="center"
             android:textColor="#ffff" />
-
-        <!--
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toStartOf="@+id/tvsignup"
-                        android:text="Don't Have Account? " />
-
-                    <TextView
-                        android:id="@+id/tvsignup"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="15dp"
-                        android:onClick="singUpform"
-                        android:text="Sign Up Now"
-                        android:textColor="@color/App_color"
-                        android:textStyle="bold" />
-
-                </RelativeLayout>
-        -->
+        <ProgressBar
+            android:id="@+id/progress_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:indeterminateDrawable="@drawable/progressbardrawable"
+            android:indeterminateDuration="@android:integer/config_longAnimTime"
+            android:visibility="gone" />
 
     </LinearLayout>
 

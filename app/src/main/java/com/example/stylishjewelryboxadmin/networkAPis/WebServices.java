@@ -113,7 +113,9 @@ public interface WebServices {
                                               @Field("img") String img,
                                               @Field("location") String location,
                                               @Field("singup_date") String singup_date,
-                                              @Field("phone") String phone);
+                                              @Field("phone") String phone,
+                                              @Field("status") String status
+    );
 
     @FormUrlEncoded
     @POST(GETLOGINDETAILS)

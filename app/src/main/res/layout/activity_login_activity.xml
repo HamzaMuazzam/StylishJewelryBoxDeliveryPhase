@@ -111,7 +111,15 @@
                  android:textStyle="bold"/>
 
         </RelativeLayout>
-
+        <ProgressBar
+            android:id="@+id/progress_signin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:indeterminateDrawable="@drawable/progressbardrawable"
+            android:indeterminateDuration="@android:integer/config_longAnimTime"
+            android:visibility="gone" />
     </LinearLayout>
 
 

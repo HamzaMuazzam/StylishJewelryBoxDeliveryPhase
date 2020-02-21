@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,11 +36,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivityActivity extends AppCompatActivity {
+    public static final String NAME="name";
+    public static final String PHONENUMBER="PHONENUMBER";
+    public static final String UUID="UUID";
     private TextInputEditText ed_name, ed_phone;
     private TextInputLayout til_name, til_phone;
     private WebServices webServices;
     private FirebaseAuth mAuth;
     String code;
+    ProgressBar progress_signin;
     private String CODERECEIVED;
 
     @Override
@@ -59,15 +64,13 @@ public class LoginActivityActivity extends AppCompatActivity {
     }
 
     private void initviews() {
+        progress_signin = findViewById(R.id.progress_signin);
         webServices = WebServices.RETROFIT.create(WebServices.class);
         mAuth = FirebaseAuth.getInstance();
-
         til_name = findViewById(R.id.tvtilname);
         til_phone = findViewById(R.id.tvtilphone);
         ed_name = findViewById(R.id.tvetname);
         ed_phone = findViewById(R.id.tvetphone);
-
-
     }
 
     public void singUpform(View view) {
@@ -102,7 +105,7 @@ public class LoginActivityActivity extends AppCompatActivity {
         } else {
 
             String removeLeadingZerosPHONE = removeLeadingZeros(strphone);
-
+            progress_signin.setVisibility(View.VISIBLE);
             webServices.getLogin("+92" + removeLeadingZerosPHONE, strname).enqueue(new Callback<GetLoginDetailResponse>() {
                 @Override
                 public void onResponse(Call<GetLoginDetailResponse> call, Response<GetLoginDetailResponse> response) {
@@ -127,10 +130,12 @@ public class LoginActivityActivity extends AppCompatActivity {
                                     deviceId = telephonyManager.getDeviceId();
                                     if (jdbUid.equalsIgnoreCase(deviceId)) {
                                         sendverificationcode("+92" + removeLeadingZerosPHONE);
-                                        Toast.makeText(LoginActivityActivity.this, ""+removeLeadingZerosPHONE, Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivityActivity.this, "" + removeLeadingZerosPHONE, Toast.LENGTH_LONG).show();
 
                                     } else {
                                         Toast.makeText(LoginActivityActivity.this, "Please Login From Registered Device", Toast.LENGTH_LONG).show();
+                                        progress_signin.setVisibility(View.GONE);
+
                                     }
 
                                 }
@@ -139,12 +144,16 @@ public class LoginActivityActivity extends AppCompatActivity {
                             }
                         } else {
                             Toast.makeText(LoginActivityActivity.this, "Phone or User Name does not match", Toast.LENGTH_SHORT).show();
+                            progress_signin.setVisibility(View.GONE);
+
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<GetLoginDetailResponse> call, Throwable t) {
+                    progress_signin.setVisibility(View.GONE);
+
                     Toast.makeText(LoginActivityActivity.this, "on fail " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -174,6 +183,8 @@ public class LoginActivityActivity extends AppCompatActivity {
 
                         Toast.makeText(LoginActivityActivity.this, "in IF ---onVerificationCompleted\n" + code, Toast.LENGTH_SHORT).show();
                     } else {
+                        progress_signin.setVisibility(View.GONE);
+
                         Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
@@ -206,10 +217,14 @@ public class LoginActivityActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        progress_signin.setVisibility(View.GONE);
+
                         Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                     } else {
+                        progress_signin.setVisibility(View.GONE);
+
                         Toast.makeText(LoginActivityActivity.this, "Auto Verification Failed", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -220,4 +235,14 @@ public class LoginActivityActivity extends AppCompatActivity {
         String regex = "^0+";
         return digits.replaceAll(regex, "");
     }
+
+
+    public void savecredits(String name, String phonenumber, String uuid) {
+
+        Utils.savePreferences(NAME,name,this);
+        Utils.savePreferences(PHONENUMBER,name,this);
+        Utils.savePreferences(UUID,name,this);
+
+    }
+
 }

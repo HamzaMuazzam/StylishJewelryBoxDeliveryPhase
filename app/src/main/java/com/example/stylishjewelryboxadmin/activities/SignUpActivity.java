@@ -3,7 +3,6 @@ package com.example.stylishjewelryboxadmin.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,9 +40,10 @@ public class SignUpActivity extends AppCompatActivity {
     WebServices webServices;
     TextInputLayout til_name, til_phone;
     TextInputEditText ed_name, ed_phone;
-private  String code,CODERECEIVED;
+    private String code, CODERECEIVED;
     String formatedDate;
     private FirebaseAuth mAuth;
+    ProgressBar progress_signup;
     String deviceId = null;
     String strname;
     String phone;
@@ -56,17 +57,15 @@ private  String code,CODERECEIVED;
         if (mobileDataEnable || wifiEnable) {
 
             initviews();
-        }
-        else
-        {
-            Utils.showCustomDialog(this,"No Internet connection ");
+        } else {
+            Utils.showCustomDialog(this, "No Internet connection ");
 
         }
     }
 
     private void initviews() {
         mAuth = FirebaseAuth.getInstance();
-
+        progress_signup = findViewById(R.id.progress_signup);
         webServices = WebServices.RETROFIT.create(WebServices.class);
         til_name = findViewById(R.id.tv_TIL_username);
         til_phone = findViewById(R.id.tv_TIL_phone);
@@ -104,20 +103,16 @@ private  String code,CODERECEIVED;
 
         strname = til_name.getEditText().getText().toString();
         String strphone = til_phone.getEditText().getText().toString().trim();
-        if (TextUtils.isEmpty(strname)){
+        if (TextUtils.isEmpty(strname)) {
             ed_name.setError("Can't be Empty");
-        }
-        else if(TextUtils.isEmpty(strphone)) {
+        } else if (TextUtils.isEmpty(strphone)) {
             ed_name.clearFocus();
             ed_phone.setError("Can't be Empty");
-        }
-        else  if (strphone.length()<10){
+        } else if (strphone.length() < 10) {
             ed_phone.setError("Invalid Number");
-        }
-
-        else {
+        } else {
             phone = removeLeadingZeros(strphone);
-            sendverificationcode("+92"+phone);
+            sendverificationcode("+92" + phone);
         }
 
     }
@@ -125,16 +120,14 @@ private  String code,CODERECEIVED;
     public void showCustomDialog(Context context, String message) {
         final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
         builder.setMessage(message);
+        builder.setCancelable(false);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Intent intent = new Intent(SignUpActivity.this, LoginActivityActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();
+            Intent intent = new Intent(SignUpActivity.this, LoginActivityActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
 
-            }
         });
 
         android.app.AlertDialog alertDialog = builder.create();
@@ -148,6 +141,8 @@ private  String code,CODERECEIVED;
     }
 
     private void sendverificationcode(String phonenumber) {
+        progress_signup.setVisibility(View.VISIBLE);
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phonenumber,
                 60,
@@ -169,8 +164,10 @@ private  String code,CODERECEIVED;
 
                         Toast.makeText(SignUpActivity.this, "in IF ---onVerificationCompleted\n" + code, Toast.LENGTH_SHORT).show();
                     } else {
-                        singnUpAPI(deviceId,strname,formatedDate,phone);
-                       }}
+
+                        singnUpAPI(deviceId, strname, formatedDate, phone);
+                    }
+                }
 
                 @Override
                 public void onVerificationFailed(FirebaseException e) {
@@ -198,7 +195,7 @@ private  String code,CODERECEIVED;
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
 
-                        singnUpAPI(deviceId,strname,formatedDate,phone);
+                        singnUpAPI(deviceId, strname, formatedDate, phone);
 
 
                     } else {
@@ -207,28 +204,33 @@ private  String code,CODERECEIVED;
                 });
     }
 
-    public  void singnUpAPI(String deviceID,String name,String date,String phone ){
-             webServices.deliveryBoySignUp(deviceID, name, "null", "null", "null", "null", date
-                    , "+92"+phone).enqueue(new Callback<DeliveryBoysignup>() {
-                @Override
-                public void onResponse(Call<DeliveryBoysignup> call, Response<DeliveryBoysignup> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Boolean status = response.body().getStatus();
-                        if (status) {
+    public void singnUpAPI(String deviceID, String name, String date, String phone) {
+        webServices.deliveryBoySignUp(deviceID, name, "null", "null", "null", "null", date
+                , "+92" + phone, "0").enqueue(new Callback<DeliveryBoysignup>() {
+            @Override
+            public void onResponse(Call<DeliveryBoysignup> call, Response<DeliveryBoysignup> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Boolean status = response.body().getStatus();
+                    if (status) {
 
-                            showCustomDialog(SignUpActivity.this,"User Created");
-                        } else {
-                            Toast.makeText(SignUpActivity.this, "Phone Number Already Registered!", Toast.LENGTH_LONG).show();
+                        showCustomDialog(SignUpActivity.this, "User created  and will be approved by admin");
+                        progress_signup.setVisibility(View.GONE);
 
-                        }
+
+                    } else {
+                        progress_signup.setVisibility(View.GONE);
+                        Toast.makeText(SignUpActivity.this, "Phone Number Already Registered!", Toast.LENGTH_LONG).show();
+
                     }
                 }
+            }
 
-                @Override
-                public void onFailure(Call<DeliveryBoysignup> call, Throwable t) {
-                    Toast.makeText(SignUpActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onFailure(Call<DeliveryBoysignup> call, Throwable t) {
+                progress_signup.setVisibility(View.GONE);
+                Toast.makeText(SignUpActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
