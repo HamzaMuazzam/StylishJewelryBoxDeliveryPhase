@@ -7,12 +7,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     String[] locationarray;
     String[] selectarea;
     ProgressBar progressBar;
+    Toolbar toolbar;
+    TextView tv_username_delivry;
+    ImageView iv_logout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +51,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         boolean wifiEnable = Utils.WifiEnable(this);
         if (mobileDataEnable || wifiEnable) {
             selectarea = new String[1];
-            selectarea[0]="Select Location";
-           // arraystest();
+            selectarea[0] = "Select Location";
+            // arraystest();
             initviews();
             webservice();
+            logout();
         } else {
             Utils.showCustomDialog(this, "No Internet Connection");
-            btn_getorders.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Utils.showCustomDialog(MainActivity.this, "No Internet Connection");
-
-                }
-            });
+            btn_getorders.setOnClickListener(v -> Utils.showCustomDialog(MainActivity.this, "No Internet Connection"));
         }
+    }
+
+    private void logout() {
+
+        iv_logout.setOnClickListener(v -> {
+            Utils.savePreferences(LoginActivityActivity.NAME," ",this);
+            Utils.savePreferences(LoginActivityActivity.PHONENUMBER," ",this);
+            Utils.savePreferences(LoginActivityActivity.UUID," ",this);
+            Intent intent = new Intent(MainActivity.this, LoginActivityActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
+
     }
 
 //    private void arraystest() {
@@ -85,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                     if (list != null) {
                         for (int x = 0; x < list.size(); x++) {
-                            locationarray[x]=list.get(x).getLocationname();
+                            locationarray[x] = list.get(x).getLocationname();
 
                         }
                         spinnerwork();
@@ -108,6 +122,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     private void initviews() {
+
+
+        toolbar = findViewById(R.id.toolbar_name);
+        iv_logout = findViewById(R.id.iv_logout);
+        tv_username_delivry = findViewById(R.id.tv_username_delivry);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("");
+        String name = Utils.getPreferences(LoginActivityActivity.NAME, this);
+        tv_username_delivry.setText("Logged in as " + name);
+
         btn_getorders = findViewById(R.id.btn_getorder);
         webServices = WebServices.RETROFIT.create(WebServices.class);
         spinner = findViewById(R.id.order_spiner);
@@ -128,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String[] locationarray2 = selectarea;
         int length1 = locationarray1.length;
         int length2 = locationarray2.length;
-        String[] new_array=new String[length1+length2];
+        String[] new_array = new String[length1 + length2];
         System.arraycopy(locationarray2, 0, new_array, 0, length2);
         System.arraycopy(locationarray1, 0, new_array, length2, length1);
         int length = new_array.length;
@@ -164,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Snackbar.make(contextView, "Please Select Location First ", Snackbar.LENGTH_SHORT).
                             setAction("ok", v1 -> {
                             }).setAction("OK", v12 -> {
-                            }).show();
+                    }).show();
                 }
             });
 
@@ -217,4 +241,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
 }

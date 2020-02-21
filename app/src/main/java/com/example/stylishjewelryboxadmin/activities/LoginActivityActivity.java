@@ -2,6 +2,7 @@ package com.example.stylishjewelryboxadmin.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,16 +37,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivityActivity extends AppCompatActivity {
-    public static final String NAME="name";
-    public static final String PHONENUMBER="PHONENUMBER";
-    public static final String UUID="UUID";
+    public static final String NAME = "name";
+    public static final String PHONENUMBER = "PHONENUMBER";
+    public static final String UUID = "UUID";
     private TextInputEditText ed_name, ed_phone;
     private TextInputLayout til_name, til_phone;
     private WebServices webServices;
     private FirebaseAuth mAuth;
     String code;
+    String strname;
+    String removeLeadingZerosPHONE;
     ProgressBar progress_signin;
     private String CODERECEIVED;
+    @SuppressLint("HardwareIds")
+    String deviceId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,18 @@ public class LoginActivityActivity extends AppCompatActivity {
         boolean mobileDataEnable = Utils.isMobileDataEnable(this);
         boolean wifiEnable = Utils.WifiEnable(this);
         if (mobileDataEnable || wifiEnable) {
+            String uuid = Utils.getPreferences(UUID, this);
+            String number = Utils.getPreferences(PHONENUMBER, this);
+            String name = Utils.getPreferences(NAME, this);
+            if (uuid != " " && name != " " && number != " "){
+                Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            else {
+                initviews();
+            }
 
-            initviews();
         } else {
             Utils.showCustomDialog(this, "No Internet connection ");
 
@@ -88,14 +103,13 @@ public class LoginActivityActivity extends AppCompatActivity {
                 return;
             }
         }
-        @SuppressLint("HardwareIds") String deviceId = null;
 
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager != null) {
             deviceId = telephonyManager.getDeviceId();
         }
         String strphone = til_phone.getEditText().getText().toString();
-        String strname = til_name.getEditText().getText().toString();
+        strname = til_name.getEditText().getText().toString();
         if (TextUtils.isEmpty(strname)) {
             ed_name.setError("Can't be Empty");
         } else if (TextUtils.isEmpty(strphone)) {
@@ -104,7 +118,7 @@ public class LoginActivityActivity extends AppCompatActivity {
             ed_phone.setError("Invalid Number");
         } else {
 
-            String removeLeadingZerosPHONE = removeLeadingZeros(strphone);
+            removeLeadingZerosPHONE = removeLeadingZeros(strphone);
             progress_signin.setVisibility(View.VISIBLE);
             webServices.getLogin("+92" + removeLeadingZerosPHONE, strname).enqueue(new Callback<GetLoginDetailResponse>() {
                 @Override
@@ -123,7 +137,6 @@ public class LoginActivityActivity extends AppCompatActivity {
                                         return;
                                     }
                                 }
-                                @SuppressLint("HardwareIds") String deviceId = null;
 
                                 TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                                 if (telephonyManager != null) {
@@ -185,9 +198,7 @@ public class LoginActivityActivity extends AppCompatActivity {
                     } else {
                         progress_signin.setVisibility(View.GONE);
 
-                        Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
+                        showCustomDialog(LoginActivityActivity.this, "Do you want to safe credentials?");
                     }
 
                 }
@@ -218,10 +229,8 @@ public class LoginActivityActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         progress_signin.setVisibility(View.GONE);
+                        showCustomDialog(this, "Do you want to safe credentials?");
 
-                        Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
                     } else {
                         progress_signin.setVisibility(View.GONE);
 
@@ -237,12 +246,31 @@ public class LoginActivityActivity extends AppCompatActivity {
     }
 
 
-    public void savecredits(String name, String phonenumber, String uuid) {
+    public void showCustomDialog(final Context context, String message) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            savecredits(strname, "+92" + removeLeadingZerosPHONE, deviceId);
+            Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
 
-        Utils.savePreferences(NAME,name,this);
-        Utils.savePreferences(PHONENUMBER,name,this);
-        Utils.savePreferences(UUID,name,this);
+        builder.setNegativeButton("No", (dialog, which) -> {
+            Utils.savePreferences(NAME, strname, this);
+            Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
 
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
+    public void savecredits(String name, String phonenumber, String uuid) {
+        Utils.savePreferences(NAME, name, this);
+        Utils.savePreferences(PHONENUMBER, phonenumber, this);
+        Utils.savePreferences(UUID, uuid, this);
+    }
 }
