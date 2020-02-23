@@ -42,24 +42,22 @@ public class GetClientByLocationAdapter extends RecyclerView.Adapter<GetClientBy
         holder.phone.setText(modelclass.getJcdPhone());
         holder.tvTotalOrders.setText(modelclass.getTotalOrder());
 
-        holder.holderview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AllOrdersActivity.class);
-                String jcdPhone = modelclass.getJcdPhone();
-                String jcdId = modelclass.getJcdId();
-                String jcdName = modelclass.getJcdName();
-                String totalOrder = modelclass.getTotalOrder();
-                intent.putExtra("phone", jcdPhone)
-                        .putExtra("jcdid", jcdId)
-                        .putExtra("name", jcdName)
-                        .putExtra("totalorders", totalOrder)
-                        .putExtra("orderbydate",GetAllCientByLocationActivity.strDate)
-                        .putExtra("area", GetAllCientByLocationActivity.areaname);
+        holder.holderview.setOnClickListener(v -> {
+            Intent intent = new Intent(context, AllOrdersActivity.class);
+            String jcdPhone = modelclass.getJcdPhone();
+            String jcdId = modelclass.getJcdId();
+            String jcdName = modelclass.getJcdName();
+            String totalOrder = modelclass.getTotalOrder();
+
+            intent.putExtra("phone", jcdPhone)
+                    .putExtra("jcdid", jcdId)
+                    .putExtra("name", jcdName)
+                    .putExtra("totalorders", totalOrder)
+                    .putExtra("orderbydate", GetAllCientByLocationActivity.strDate)
+                    .putExtra("area", GetAllCientByLocationActivity.areaname);
 
 
-                context.startActivity(intent);
-            }
+            context.startActivity(intent);
         });
     }
 

@@ -62,8 +62,8 @@ public class ViewAllFragment extends Fragment {
 //            @Override
 //            public void onResponse(Call<GetAllMeterialCatResponse> call, Response<GetAllMeterialCatResponse> response) {
 //                if (response.isSuccessful() && response.body() != null) {
-//                    list = response.body().getGetAllMeterialCats();
-//                    //                    for (int x = 0; x < list.size(); x++) {
+//                    pendinglist = response.body().getGetAllMeterialCats();
+//                    //                    for (int x = 0; x < pendinglist.size(); x++) {
 ////
 ////
 /////*
@@ -74,7 +74,7 @@ public class ViewAllFragment extends Fragment {
 ////                                    Integer count = response.body().getCount();
 //////                                    Toast.makeText(getContext(),"count against "+mcName +"\n"+
 //////                                            String.valueOf(count), Toast.LENGTH_SHORT).show();
-////                                    orderarray = new int[list.size()];
+////                                    orderarray = new int[pendinglist.size()];
 ////                                    orderarray[finalX] = count;
 ////
 ////                                }
@@ -90,12 +90,12 @@ public class ViewAllFragment extends Fragment {
 ////
 ////                    }
 //
-//                    for (int x = 0; x < list.size(); x++) {
-//                        String mcName = list.get(x).getMcName();
-//                        stringarray = new String[list.size()];
+//                    for (int x = 0; x < pendinglist.size(); x++) {
+//                        String mcName = pendinglist.get(x).getMcName();
+//                        stringarray = new String[pendinglist.size()];
 //                        stringarray[x] = mcName;
 //                    }
-//                    meterial_recyclerview(list);
+//                    meterial_recyclerview(pendinglist);
 //
 //                }
 //
@@ -109,8 +109,8 @@ public class ViewAllFragment extends Fragment {
 //
 //    }
 
-//    private void meterial_recyclerview(List list) {
-//        catsAdapter = new meterial_adapter(getContext(), list);
+//    private void meterial_recyclerview(List pendinglist) {
+//        catsAdapter = new meterial_adapter(getContext(), pendinglist);
 //        recyclerView_meterial.setAdapter(catsAdapter);
 //        recyclerView_meterial.setLayoutManager(new GridLayoutManager(getContext(),
 //                2,

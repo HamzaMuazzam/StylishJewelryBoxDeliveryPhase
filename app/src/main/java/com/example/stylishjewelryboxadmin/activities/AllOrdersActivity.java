@@ -43,7 +43,7 @@ public class AllOrdersActivity extends AppCompatActivity {
 
 
         } else {
-            Utils.showCustomDialog(this, "No Internet Connection");
+            Utils.showCustomDialog(this, "Oho No Internet Connection");
         }
 
 
@@ -64,8 +64,6 @@ public class AllOrdersActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         area = getIntent().getStringExtra("area");
         orderbydate = getIntent().getStringExtra("orderbydate");
-
-
 //        Toast.makeText(this, jcdid + phone + name + totalorders+"\n"+area, Toast.LENGTH_SHORT).show();
 
 

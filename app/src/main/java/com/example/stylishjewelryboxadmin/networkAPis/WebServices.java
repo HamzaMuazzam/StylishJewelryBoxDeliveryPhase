@@ -1,13 +1,11 @@
 package com.example.stylishjewelryboxadmin.networkAPis;
 
-import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.GetOrderNumbersDeliveredResponse;
+import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.GetAllDeliveredOrderResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.getLoginDetails.GetLoginDetailResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.getclientbylocation.GetClientsByLocationResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.getclientinfo.GetClientInfoResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.getlocationcity.GetLocationbyCityResponse;
-import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetOrderNumbersResponse;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderDeliveredResponse;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderPendingResponse;
+import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrderResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.updateorderstatus.UpdateOrderStatus;
 import com.example.stylishjewelryboxadmin.recyclerviews.singleitemsbyordernumber.GetItemByOrderIDResponse;
 
@@ -31,8 +29,8 @@ public interface WebServices {
     String GETORDERNuMERS = "getordersnumberaslist.php";
     String GETPENDINGORDERS = "getOrderPending.php";
     String GETITEMBYORDERID = "getsingleitemsperorder.php";
-    String GETORDERNUMBERDELIVRED = "getordernumberdelivered.php";
-    String GETDELIVERDORDERS = "getdeliveredorders.php";
+    String GETORDERNUMBERDELIVRED = "getallorderdelivered.php";
+
     String DeliveryBoySignUp = "deliveryboy_singup.php";
     String GETLOGINDETAILS = "getLogin.php";
 
@@ -57,19 +55,20 @@ public interface WebServices {
     @FormUrlEncoded
     @POST(GETCLIENTBYLOCATION)
     Call<GetClientsByLocationResponse> getclientbylocation(@Field("location") String location, @Field("statusid") String statusid
-    ,@Field("orderbydate") String  orderbydate);
+            , @Field("orderbydate") String orderbydate, @Field("jdb_id") String jdb_id);
 
 
        @FormUrlEncoded
     @POST(GETORDERNuMERS)
-    Call<GetOrderNumbersResponse> getOrderNumbers(@Field("clientid") String clientid,
-                                                  @Field("orderstatus") String orderstatusid,
-                                                  @Field("area") String area,@Field("orderbydate") String orderbydate);
-    @FormUrlEncoded
-    @POST(GETPENDINGORDERS)
-    Call<GetOrderPendingResponse> getPendingOrder(@Field("clientid") String clientid,
-                                                  @Field("orderstatus") String orderstatusid,
-                                                  @Field("orderid") String orderid );
+       Call<GetAllOrderResponse> getAllPendingOrders(@Field("clientid") String clientid,
+                                                     @Field("orderstatus") String orderstatusid,
+                                                     @Field("area") String area, @Field("orderbydate") String orderbydate);
+
+    //    @FormUrlEncoded
+//    @POST(GETPENDINGORDERS)
+//    Call<GetOrderPendingResponse> getPendingOrder(@Field("clientid") String clientid,
+//                                                  @Field("orderstatus") String orderstatusid,
+//                                                  @Field("orderid") String orderid );
     @FormUrlEncoded
     @POST(GETITEMBYORDERID)
     Call<GetItemByOrderIDResponse> getItemsByOrderID(@Field("orderid") String orderid );
@@ -93,15 +92,14 @@ public interface WebServices {
 
     @FormUrlEncoded
     @POST(GETORDERNUMBERDELIVRED)
-    Call<GetOrderNumbersDeliveredResponse> getOrdernumberDelivred(@Field("clientid")String clientid,
-                                                                  @Field("orderstatus")String orderstatus,
-                                                                  @Field("area")String area,
-                                                                  @Field("date")String date);
+    Call<GetAllDeliveredOrderResponse> getAllOrderDelivred(@Field("clientid") String clientid,
+                                                           @Field("orderstatus") String orderstatus,
+                                                           @Field("area") String area);
 
-
-    @FormUrlEncoded
-    @POST(GETDELIVERDORDERS)
-    Call<GetOrderDeliveredResponse> getDeliveredOrders(@Field("orderid") String orderid);
+//
+//    @FormUrlEncoded
+//    @POST(GETDELIVERDORDERS)
+//    Call<GetOrderDeliveredResponse> getDeliveredOrders(@Field("orderid") String orderid);
 
 
     @FormUrlEncoded

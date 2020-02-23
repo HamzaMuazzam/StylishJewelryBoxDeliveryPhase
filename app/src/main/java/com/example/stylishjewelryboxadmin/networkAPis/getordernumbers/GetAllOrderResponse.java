@@ -1,35 +1,34 @@
 package com.example.stylishjewelryboxadmin.networkAPis.getordernumbers;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class GetOrderNumbersResponse {
+public class GetAllOrderResponse {
 
     @SerializedName("status")
     @Expose
     private Boolean status;
-    @SerializedName("GetOrderNumbers")
+    @SerializedName("GetAllOrder")
     @Expose
-    private List<GetOrderNumber> getOrderNumbers = null;
+    private List<GetAllOrder> getAllOrder = null;
 
     /**
      * No args constructor for use in serialization
      *
      */
-    public GetOrderNumbersResponse() {
+    public GetAllOrderResponse() {
     }
 
     /**
      *
-     * @param getOrderNumbers
+     * @param getAllOrder
      * @param status
      */
-    public GetOrderNumbersResponse(Boolean status, List<GetOrderNumber> getOrderNumbers) {
+    public GetAllOrderResponse(Boolean status, List<GetAllOrder> getAllOrder) {
         super();
         this.status = status;
-        this.getOrderNumbers = getOrderNumbers;
+        this.getAllOrder = getAllOrder;
     }
 
     public Boolean getStatus() {
@@ -40,12 +39,12 @@ public class GetOrderNumbersResponse {
         this.status = status;
     }
 
-    public List<GetOrderNumber> getGetOrderNumbers() {
-        return getOrderNumbers;
+    public List<GetAllOrder> getGetAllOrder() {
+        return getAllOrder;
     }
 
-    public void setGetOrderNumbers(List<GetOrderNumber> getOrderNumbers) {
-        this.getOrderNumbers = getOrderNumbers;
+    public void setGetAllOrder(List<GetAllOrder> getAllOrder) {
+        this.getAllOrder = getAllOrder;
     }
 
 }

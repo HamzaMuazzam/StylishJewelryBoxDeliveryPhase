@@ -40,10 +40,13 @@ public class LoginActivityActivity extends AppCompatActivity {
     public static final String NAME = "name";
     public static final String PHONENUMBER = "PHONENUMBER";
     public static final String UUID = "UUID";
+    public static final String LOGIN_ID = "login_id";
     private TextInputEditText ed_name, ed_phone;
     private TextInputLayout til_name, til_phone;
     private WebServices webServices;
     private FirebaseAuth mAuth;
+    List<GetLoginDetail> list;
+
     String code;
     String strname;
     String removeLeadingZerosPHONE;
@@ -59,17 +62,9 @@ public class LoginActivityActivity extends AppCompatActivity {
         boolean mobileDataEnable = Utils.isMobileDataEnable(this);
         boolean wifiEnable = Utils.WifiEnable(this);
         if (mobileDataEnable || wifiEnable) {
-            String uuid = Utils.getPreferences(UUID, this);
-            String number = Utils.getPreferences(PHONENUMBER, this);
-            String name = Utils.getPreferences(NAME, this);
-            if (uuid != " " && name != " " && number != " "){
-                Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            else {
-                initviews();
-            }
+
+
+            initviews();
 
         } else {
             Utils.showCustomDialog(this, "No Internet connection ");
@@ -124,12 +119,12 @@ public class LoginActivityActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<GetLoginDetailResponse> call, Response<GetLoginDetailResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
+                        list = response.body().getGetLoginDetail();
                         Boolean status = response.body().getStatus();
                         if (status) {
-                            List<GetLoginDetail> list = response.body().getGetLoginDetail();
                             for (int x = 0; x < list.size(); x++) {
-//                                String jdbName = list.get(x).getJdbName();
-//                                String jdbPhone = list.get(x).getJdbPhone();
+//                                String jdbName = pendinglist.get(x).getJdbName();
+//                                String jdbPhone = pendinglist.get(x).getJdbPhone();
                                 String jdbUid = list.get(x).getJdbUid();
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                     if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -143,7 +138,7 @@ public class LoginActivityActivity extends AppCompatActivity {
                                     deviceId = telephonyManager.getDeviceId();
                                     if (jdbUid.equalsIgnoreCase(deviceId)) {
                                         sendverificationcode("+92" + removeLeadingZerosPHONE);
-                                        Toast.makeText(LoginActivityActivity.this, "" + removeLeadingZerosPHONE, Toast.LENGTH_LONG).show();
+
 
                                     } else {
                                         Toast.makeText(LoginActivityActivity.this, "Please Login From Registered Device", Toast.LENGTH_LONG).show();
@@ -258,6 +253,8 @@ public class LoginActivityActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton("No", (dialog, which) -> {
+            String jdbId = list.get(0).getJdbId();
+            Utils.savePreferences(LOGIN_ID, jdbId, this);
             Utils.savePreferences(NAME, strname, this);
             Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -272,5 +269,7 @@ public class LoginActivityActivity extends AppCompatActivity {
         Utils.savePreferences(NAME, name, this);
         Utils.savePreferences(PHONENUMBER, phonenumber, this);
         Utils.savePreferences(UUID, uuid, this);
+        String jdbId = list.get(0).getJdbId();
+        Utils.savePreferences(LOGIN_ID, jdbId, this);
     }
 }

@@ -65,9 +65,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void logout() {
 
         iv_logout.setOnClickListener(v -> {
-            Utils.savePreferences(LoginActivityActivity.NAME," ",this);
-            Utils.savePreferences(LoginActivityActivity.PHONENUMBER," ",this);
-            Utils.savePreferences(LoginActivityActivity.UUID," ",this);
+
+            Utils.savePreferences(LoginActivityActivity.NAME, "null", this);
+            Utils.savePreferences(LoginActivityActivity.PHONENUMBER, "null", this);
+            Utils.savePreferences(LoginActivityActivity.UUID, "null", this);
+            Utils.savePreferences(LoginActivityActivity.LOGIN_ID, null, this);
+
             Intent intent = new Intent(MainActivity.this, LoginActivityActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
                     } else {
-                        Toast.makeText(MainActivity.this, "list is empty", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "pendinglist is empty", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

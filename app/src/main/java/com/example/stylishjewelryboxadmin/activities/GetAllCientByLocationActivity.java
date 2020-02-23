@@ -27,6 +27,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.LOGIN_ID;
+
 public class GetAllCientByLocationActivity extends AppCompatActivity {
     public static String areaname;
     WebServices webServices;
@@ -63,13 +65,12 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
         int YEAR = calendar.get(Calendar.YEAR);
         DatePickerDialog datePickerDialog = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> {
 
-            if (monthOfYear<9){
-                strDate =year+"-0"+(monthOfYear+1)+"-"+dayOfMonth;
+            if (monthOfYear < 9) {
+                strDate = year + "-0" + (monthOfYear + 1) + "-" + dayOfMonth;
+            } else {
+                strDate = year + "-" + (+monthOfYear + 1) + "-" + dayOfMonth;
             }
-            else {
-                strDate =year+"-"+(+monthOfYear+1)+"-"+dayOfMonth;
-            }
-            Toast.makeText(this, "date : " + strDate , Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "date : " + strDate, Toast.LENGTH_SHORT).show();
 
             if (strDate != null) {
                 tvDate.setText(strDate);
@@ -85,6 +86,7 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
         });
         datePickerDialog.show(getSupportFragmentManager(), "Date Picker");
     }
+
     private void initview() {
         tvDate = findViewById(R.id.tvDate);
         areaname = getIntent().getStringExtra(Veriables.AREA);
@@ -97,8 +99,11 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
 
     private void getclientsbylocation(String strdate) {
 //        Toast.makeText(getApplicationContext(),"str date :" +strdate,Toast.LENGTH_LONG).show();
-        if (areaname != null) {
-            webServices.getclientbylocation(areaname, "1", strdate).enqueue(new Callback<GetClientsByLocationResponse>() {
+        String login_id = Utils.getPreferences(LOGIN_ID, this);
+        if (areaname != null && login_id != null) {
+
+            Toast.makeText(this, areaname + "   1  " + strdate + "  " + login_id, Toast.LENGTH_LONG).show();
+            webServices.getclientbylocation(areaname, "1", strdate, login_id).enqueue(new Callback<GetClientsByLocationResponse>() {
                 @Override
                 public void onResponse(Call<GetClientsByLocationResponse> call, Response<GetClientsByLocationResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
@@ -112,7 +117,7 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(GetAllCientByLocationActivity.this, "No Record Found", Toast.LENGTH_SHORT).show();
                             View contextView = findViewById(R.id.context_view1);
-                            Snackbar.make(contextView, "No Data Found Against "+strDate, Snackbar.LENGTH_SHORT).setAction("Open Calender", new View.OnClickListener() {
+                            Snackbar.make(contextView, "No Data Found Against " + strDate, Snackbar.LENGTH_SHORT).setAction("Open Calender", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     calander();

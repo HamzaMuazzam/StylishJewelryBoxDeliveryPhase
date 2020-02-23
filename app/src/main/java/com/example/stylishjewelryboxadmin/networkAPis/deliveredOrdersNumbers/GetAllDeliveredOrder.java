@@ -1,11 +1,8 @@
-package com.example.stylishjewelryboxadmin.networkAPis.getorders;
-
-
-
+package com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GetOrderDelivered {
+public class GetAllDeliveredOrder {
 
     @SerializedName("total_items")
     @Expose
@@ -37,13 +34,11 @@ public class GetOrderDelivered {
 
     /**
      * No args constructor for use in serialization
-     *
      */
-    public GetOrderDelivered() {
+    public GetAllDeliveredOrder() {
     }
 
     /**
-     *
      * @param deliveredDate
      * @param totalItems
      * @param deliveredBy
@@ -54,7 +49,7 @@ public class GetOrderDelivered {
      * @param jomdDatetime
      * @param otime
      */
-    public GetOrderDelivered(String totalItems, String totalPrice, String ordermianid, String odate, String otime, String deliveredDate, String deliveredTime, String deliveredBy, String jomdDatetime) {
+    public GetAllDeliveredOrder(String totalItems, String totalPrice, String ordermianid, String odate, String otime, String deliveredDate, String deliveredTime, String deliveredBy, String jomdDatetime) {
         super();
         this.totalItems = totalItems;
         this.totalPrice = totalPrice;
@@ -138,5 +133,4 @@ public class GetOrderDelivered {
     public void setJomdDatetime(String jomdDatetime) {
         this.jomdDatetime = jomdDatetime;
     }
-
 }

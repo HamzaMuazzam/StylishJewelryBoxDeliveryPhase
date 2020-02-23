@@ -8,17 +8,21 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
+import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.fragments.DeliveredFragment;
 import com.example.stylishjewelryboxadmin.fragments.PendingFragment;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderDelivered;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderPending;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderPendingResponse;
+import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.GetAllDeliveredOrder;
+import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrder;
+import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrderResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.updateorderstatus.UpdateOrderStatus;
+import com.example.stylishjewelryboxadmin.recyclerviews.PendingOrdersAdapter;
+import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.util.List;
 
@@ -26,26 +30,30 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.stylishjewelryboxadmin.activities.AllOrdersActivity.area;
+import static com.example.stylishjewelryboxadmin.activities.AllOrdersActivity.jcdid;
+
 public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrdersViewHolder> {
     private Context context;
-    private List<GetOrderDelivered> list;
-private WebServices webServices;
-    public DeliveredOrdersAdapter(Context context, List<GetOrderDelivered> list) {
+    private List<GetAllDeliveredOrder> deliveredOrderAdapterlist;
+    private WebServices webServices;
+
+    public DeliveredOrdersAdapter(Context context, List<GetAllDeliveredOrder> deliveredOrderAdapterlist) {
         this.context = context;
-        this.list = list;
+        this.deliveredOrderAdapterlist = deliveredOrderAdapterlist;
     }
 
     @NonNull
     @Override
     public DeliveredOrdersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.deliveredorder_itemlayout, parent, false);
-        webServices=WebServices.RETROFIT.create(WebServices.class);
+        webServices = WebServices.RETROFIT.create(WebServices.class);
         return new DeliveredOrdersViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DeliveredOrdersViewHolder holder, int position) {
-        GetOrderDelivered model = list.get(position);
+        GetAllDeliveredOrder model = deliveredOrderAdapterlist.get(position);
         holder.tv_d_orderdate.setText(model.getOdate());
         holder.tv_d_orderid.setText(model.getOrdermianid());
         holder.tv_d_orderby.setText(model.getDeliveredBy());
@@ -59,76 +67,35 @@ private WebServices webServices;
             builder.setCancelable(true);
             builder.setPositiveButton("Yes", (dialog, which) -> {
 
+                DeliveredFragment.progressBar.setVisibility(View.VISIBLE);
+                webServices.updateOrderStatusDelivered(model.getOrdermianid(), "1",
+                        "0", "none", "none")
+                        .enqueue(new Callback<UpdateOrderStatus>() {
+                            @Override
+                            public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    if (response.body().getStatus()) {
+                                        String login_id = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
+                                        Toast.makeText(context, "Moved", Toast.LENGTH_SHORT).show();
+
+                                        getAllPendingOrdersToUpdate_PendingFragment(position, login_id);
 
 
-            String ordermianid = model.getOrdermianid();
-            Toast.makeText(context,""+ordermianid,Toast.LENGTH_LONG).show();
-            DeliveredFragment.progressBar.setVisibility(View.VISIBLE);
-            webServices.updateOrderStatusDelivered(model.getOrdermianid(),"1","0","none","none").enqueue(new Callback<UpdateOrderStatus>() {
-        @Override
-        public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
-            if (response.isSuccessful() && response.body()!=null){
-                if (response.body().getStatus()){
+                                    } else {
+                                        Toast.makeText(context, "Not Updated" + response.body().getStatus(), Toast.LENGTH_LONG).show();
+                                        DeliveredFragment.progressBar.setVisibility(View.GONE);
 
-                    webServices.getPendingOrder(AllOrdersActivity.jcdid,"1",model.getOrdermianid()).enqueue(new Callback<GetOrderPendingResponse>() {
-                        @Override
-                        public void onResponse(Call<GetOrderPendingResponse> call, Response<GetOrderPendingResponse> response) {
-                            if (response.isSuccessful() && response.body()!=null){
-                                if (response.body().getStatus()){
-                                    List<GetOrderPending> getOrderPendinglist = response.body().getGetOrderPending();
-                                    PendingFragment.finallist.addAll(getOrderPendinglist);
-                                    PendingFragment.getSetAdapterPendingOrders.notifyDataSetChanged();
-                                    DeliveredFragment.progressBar.setVisibility(View.GONE);
-                                    list.remove(position);
-                                    notifyDataSetChanged();
+                                    }
 
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<GetOrderPendingResponse> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<UpdateOrderStatus> call, Throwable t) {
+                                DeliveredFragment.progressBar.setVisibility(View.GONE);
 
-                        }
-                    });
-
-
-                }
-                else {
-                    Toast.makeText(context,"Not Updated"+response.body().getStatus(),Toast.LENGTH_LONG).show();
-                }
-
-            }
-        }
-
-        @Override
-        public void onFailure(Call<UpdateOrderStatus> call, Throwable t) {
-
-        }
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                            }
+                        });
 
 
             }).setNegativeButton("No", (dialog, which) -> {
@@ -142,9 +109,44 @@ private WebServices webServices;
         });
     }
 
+    private void getAllPendingOrdersToUpdate_PendingFragment(int position, String login_id) {
+        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate).enqueue(new Callback<GetAllOrderResponse>() {
+            @Override
+            public void onResponse(Call<GetAllOrderResponse> call, Response<GetAllOrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        List<GetAllOrder> allOrderList = response.body().getGetAllOrder();
+                        PendingFragment.pendinglist.clear();
+                        PendingOrdersAdapter pendingOrdersAdapter = new PendingOrdersAdapter(context, allOrderList);
+                        PendingFragment.recyclerView_pendingorder.setAdapter(pendingOrdersAdapter);
+                        PendingFragment.recyclerView_pendingorder.setLayoutManager(new LinearLayoutManager(context));
+                        PendingFragment.progressBar.setVisibility(View.GONE);
+                        DeliveredFragment.progressBar.setVisibility(View.GONE);
+
+                        deliveredOrderAdapterlist.remove(position);
+                        notifyDataSetChanged();
+
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetAllOrderResponse> call, Throwable t) {
+                PendingFragment.progressBar.setVisibility(View.GONE);
+                DeliveredFragment.progressBar.setVisibility(View.GONE);
+
+
+            }
+        });
+
+
+    }
+
     @Override
     public int getItemCount() {
-        return list.size();
+        return deliveredOrderAdapterlist.size();
     }
 
     @Override

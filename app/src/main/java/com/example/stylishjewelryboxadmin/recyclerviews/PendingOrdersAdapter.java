@@ -14,15 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
+import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.activities.SingleOrderItemsActivity;
 import com.example.stylishjewelryboxadmin.fragments.DeliveredFragment;
 import com.example.stylishjewelryboxadmin.fragments.PendingFragment;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderDelivered;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderDeliveredResponse;
-import com.example.stylishjewelryboxadmin.networkAPis.getorders.GetOrderPending;
+import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.GetAllDeliveredOrder;
+import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.GetAllDeliveredOrderResponse;
+import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrder;
 import com.example.stylishjewelryboxadmin.networkAPis.updateorderstatus.UpdateOrderStatus;
 import com.example.stylishjewelryboxadmin.recyclerviews.deliveredOrders.DeliveredOrdersAdapter;
+import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,16 +36,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class GetSetAdapterPendingOrders extends RecyclerView.Adapter<GetSetViewHolder> {
+import static com.example.stylishjewelryboxadmin.fragments.DeliveredFragment.deliveredorder_list;
+
+public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder> {
     private Context context;
-    private List<GetOrderPending> list;
+    private List<GetAllOrder> list;
     public static String name, totalorders, phone;
     WebServices webServices;
     int parseInt;
     String formatedDate;
 
 
-    public GetSetAdapterPendingOrders(Context context, List<GetOrderPending> list) {
+    public PendingOrdersAdapter(Context context, List<GetAllOrder> list) {
         this.context = context;
         this.list = list;
     }
@@ -64,7 +68,7 @@ public class GetSetAdapterPendingOrders extends RecyclerView.Adapter<GetSetViewH
     @Override
     public void onBindViewHolder(@NonNull final GetSetViewHolder holder, final int position) {
 
-        final GetOrderPending orders = list.get(position);
+        final GetAllOrder orders = list.get(position);
 
         holder.tvordernumbers.setText(orders.getOrdermianid());
 
@@ -90,87 +94,88 @@ public class GetSetAdapterPendingOrders extends RecyclerView.Adapter<GetSetViewH
         });
 
         holder.btnmovetodelivered.setOnClickListener(v -> {
+
             final AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Order No: " + orders.getOrdermianid() + " Move to Delivered?");
             builder.setMessage("Are you sure to want to move in delivered orders?");
             builder.setCancelable(true);
+            builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
             builder.setPositiveButton("Yes", (dialog, which) -> {
                 PendingFragment.progressBar.setVisibility(View.VISIBLE);
-
                 SimpleDateFormat simpleDateFormatfotTime = new SimpleDateFormat("hh:mm:ss a");
                 Date todaytime = Calendar.getInstance().getTime();
                 String time = simpleDateFormatfotTime.format(todaytime);
-                webServices.updateOrderStatus(orders.getOrdermianid(), "2", "5", formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
+                String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
+                webServices.updateOrderStatus(orders.getOrdermianid(), "2", loginid, formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
                     @Override
                     public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             if (response.body().getStatus()) {
-                                list.remove(holder.getAdapterPosition());
-                                parseInt = parseInt - 1;
-                                PendingFragment.tvtotalorder.setText(String.valueOf(parseInt));
-                                notifyDataSetChanged();
 
-                                webServices.getDeliveredOrders(orders.getOrdermianid()).enqueue(new Callback<GetOrderDeliveredResponse>() {
-                                    @Override
-                                    public void onResponse(Call<GetOrderDeliveredResponse> call, Response<GetOrderDeliveredResponse> response) {
-                                        if (response.isSuccessful() && response.body() != null) {
-                                            if (response.body().getStatus()) {
-//                                                if (!DeliveredFragment.checkedfalse) {
-                                                    List<GetOrderDelivered> orderDeliveredList = response.body().getGetOrderDelivered();
-
-                                                    DeliveredFragment.finaldeliveredList.addAll(orderDeliveredList);
-                                                    DeliveredFragment.deliveredadapter = new DeliveredOrdersAdapter(context, DeliveredFragment.finaldeliveredList);
-                                                    DeliveredFragment.recyclerView_deliveredordders.setAdapter(DeliveredFragment.deliveredadapter);
-                                                    DeliveredFragment.recyclerView_deliveredordders.setLayoutManager(new LinearLayoutManager(context));
-                                                    DeliveredFragment.deliveredadapter.notifyDataSetChanged();
-                                                    PendingFragment.progressBar.setVisibility(View.GONE);
-
-//
-//                                                } else {
-//                                                    List<GetOrderDelivered> orderDeliveredList = response.body().getGetOrderDelivered();
-//                                                    DeliveredFragment.finaldeliveredList.addAll(orderDeliveredList);
-//                                                    DeliveredFragment.deliveredadapter.notifyDataSetChanged();
-//                                                    PendingFragment.progressBar.setVisibility(View.GONE);
-//                                                }
+                                updateDeliveredOrderFragmment(position);
 
 
-                                            } else {
-                                                Toast.makeText(context, "A " + response.body().getStatus(), Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<GetOrderDeliveredResponse> call, Throwable t) {
-
-                                    }
-                                });
-
-                            } else {
-                                Toast.makeText(context, "Order Not Updated", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UpdateOrderStatus> call, Throwable t) {
+                        Toast.makeText(context, "Not Updated", Toast.LENGTH_LONG).show();
+                        PendingFragment.progressBar.setVisibility(View.GONE);
 
-                        Toast.makeText(context, " " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
-            }).setNegativeButton("No", (dialog, which) -> {
-                dialog.dismiss();
             });
-
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-
-
         });
 
+    }
+
+    private void updateDeliveredOrderFragmment(int pos) {
+
+        webServices.getAllOrderDelivred(AllOrdersActivity.jcdid, "2", AllOrdersActivity.area).enqueue(new Callback<GetAllDeliveredOrderResponse>() {
+
+            @Override
+            public void onResponse(Call<GetAllDeliveredOrderResponse> call, Response<GetAllDeliveredOrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        List<GetAllDeliveredOrder> deliveredOrderList = response.body().getGetAllDeliveredOrder();
+                        if (deliveredorder_list != null) {
+
+                            deliveredorder_list.clear();
+                        }
+                        DeliveredOrdersAdapter deliveredadapter = new DeliveredOrdersAdapter(context, deliveredOrderList);
+                        DeliveredFragment.recyclerView_deliveredordders.setAdapter(deliveredadapter);
+                        DeliveredFragment.recyclerView_deliveredordders.setLayoutManager(new LinearLayoutManager(context));
+                        DeliveredFragment.deliveredadapter.notifyDataSetChanged();
+                        DeliveredFragment.progressBar.setVisibility(View.GONE);
+
+                        list.remove(pos);
+                        notifyDataSetChanged();
+                        PendingFragment.progressBar.setVisibility(View.GONE);
+                        Toast.makeText(context, "Updated", Toast.LENGTH_LONG).show();
+
+
+                    } else {
+                        DeliveredFragment.progressBar.setVisibility(View.GONE);
+//                        Toast.makeText(getContext(), "if response false : " + response.body().getStatus(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetAllDeliveredOrderResponse> call, Throwable t) {
+                DeliveredFragment.progressBar.setVisibility(View.GONE);
+
+//                Toast.makeText(getContext(), "onFailure: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
+
 
     @Override
 
@@ -181,5 +186,8 @@ public class GetSetAdapterPendingOrders extends RecyclerView.Adapter<GetSetViewH
     @Override
     public int getItemViewType(int position) {
         return position;
+
     }
+
+
 }
