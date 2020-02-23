@@ -36,8 +36,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.stylishjewelryboxadmin.fragments.DeliveredFragment.deliveredorder_list;
-
 public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder> {
     private Context context;
     private List<GetAllOrder> list;
@@ -115,6 +113,7 @@ public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder>
                                 updateDeliveredOrderFragmment(position);
 
 
+
                             }
                         }
                     }
@@ -143,19 +142,21 @@ public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder>
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().getStatus()) {
                         List<GetAllDeliveredOrder> deliveredOrderList = response.body().getGetAllDeliveredOrder();
-                        if (deliveredorder_list != null) {
 
-                            deliveredorder_list.clear();
-                        }
                         DeliveredOrdersAdapter deliveredadapter = new DeliveredOrdersAdapter(context, deliveredOrderList);
                         DeliveredFragment.recyclerView_deliveredordders.setAdapter(deliveredadapter);
                         DeliveredFragment.recyclerView_deliveredordders.setLayoutManager(new LinearLayoutManager(context));
-                        DeliveredFragment.deliveredadapter.notifyDataSetChanged();
+
+                        deliveredadapter.notifyDataSetChanged();
+
                         DeliveredFragment.progressBar.setVisibility(View.GONE);
 
                         list.remove(pos);
+
                         notifyDataSetChanged();
+
                         PendingFragment.progressBar.setVisibility(View.GONE);
+
                         Toast.makeText(context, "Updated", Toast.LENGTH_LONG).show();
 
 

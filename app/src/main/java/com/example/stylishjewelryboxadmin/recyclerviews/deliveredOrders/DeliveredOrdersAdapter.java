@@ -66,10 +66,10 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
             builder.setMessage("Are you sure to want to move in Pending orders?");
             builder.setCancelable(true);
             builder.setPositiveButton("Yes", (dialog, which) -> {
-
+                String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
                 DeliveredFragment.progressBar.setVisibility(View.VISIBLE);
                 webServices.updateOrderStatusDelivered(model.getOrdermianid(), "1",
-                        "0", "none", "none")
+                        "0", "none", "none", loginid)
                         .enqueue(new Callback<UpdateOrderStatus>() {
                             @Override
                             public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
@@ -110,7 +110,7 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
     }
 
     private void getAllPendingOrdersToUpdate_PendingFragment(int position, String login_id) {
-        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate).enqueue(new Callback<GetAllOrderResponse>() {
+        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
             @Override
             public void onResponse(Call<GetAllOrderResponse> call, Response<GetAllOrderResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

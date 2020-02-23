@@ -2,9 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="140dp"
     android:layout_margin="5dp"
-    android:minHeight="160dp"
     android:orientation="vertical"
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp">
@@ -12,24 +11,31 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
         android:weightSum="3">
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/iv_getorderitems"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:layout_weight="1.2">
+
+            <ImageView
+                android:id="@+id/iv_getorderitems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher_foreground" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_margin="10dp"
-            android:layout_weight="2"
+            android:layout_weight="1.8"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
@@ -51,11 +57,11 @@
                 <TextView
                     android:id="@+id/tv_item_quantity"
                     android:layout_width="wrap_content"
-                    android:textStyle="bold"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="10"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 
@@ -113,13 +119,13 @@
                     android:text="Single Item Price:"
                     android:textColor="@color/App_color"
                     android:textStyle="bold" />
+
                 <TextView
+                    android:id="@+id/tv_singlepriceofitem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0000"
-                    android:id="@+id/tv_singlepriceofitem"
                     android:layout_alignParentEnd="true"
-                    />
+                    android:text="0000" />
 
 
             </RelativeLayout>
@@ -143,8 +149,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="00000"
-                    android:textStyle="bold"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
         </LinearLayout>

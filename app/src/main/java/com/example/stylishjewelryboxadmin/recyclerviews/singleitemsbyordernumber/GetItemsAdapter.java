@@ -1,26 +1,24 @@
 package com.example.stylishjewelryboxadmin.recyclerviews.singleitemsbyordernumber;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
+import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
 import java.util.List;
 
 public class GetItemsAdapter extends RecyclerView.Adapter<SingleItemsViewHolder> {
     private Context context;
     private List<GetItemByOrderID> list;
     public static String location, jomdLongitude, jomdLatitude;
-    Bitmap bitmap;
-    InputStream inputStream;
+
 
     public GetItemsAdapter(Context context, List<GetItemByOrderID> list) {
         this.context = context;
@@ -44,25 +42,16 @@ public class GetItemsAdapter extends RecyclerView.Adapter<SingleItemsViewHolder>
         holder.tvitem_name.setText(modelclass.getPname());
         holder.tvitem_totalprice.setText(modelclass.getPprice());
         String pquantity = modelclass.getPquantity();
+
         String pprice = modelclass.getPprice();
         int parseprice = Integer.parseInt(pprice);
         int parsequantity= Integer.parseInt(pquantity);
         int singleprice = parseprice / parsequantity;
         holder.tv_singlepriceofitem.setText(String.valueOf(singleprice));
 
-
-        try {
-            inputStream = context.getAssets().open("icon.png");
-            bitmap = BitmapFactory.decodeStream(inputStream);
-            holder.iv_getorderitems.setImageBitmap(bitmap);
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        Toast.makeText(context, "" + modelclass.getPimage(), Toast.LENGTH_LONG).show();
+        Picasso.get().load(modelclass.getPimage()).into(holder.iv_getorderitems);
         location = modelclass.getJomdLocation();
-
         jomdLatitude = modelclass.getJomdLatitude();
         jomdLongitude = modelclass.getJomdLongitude();
 

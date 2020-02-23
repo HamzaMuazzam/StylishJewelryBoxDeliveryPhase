@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
+import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrder;
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrderResponse;
 import com.example.stylishjewelryboxadmin.recyclerviews.PendingOrdersAdapter;
+import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +65,8 @@ public class PendingFragment extends Fragment {
     private void getAllOrders() {
         final String jcdid = AllOrdersActivity.jcdid;
         final String area = AllOrdersActivity.area;
-
-        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate).enqueue(new Callback<GetAllOrderResponse>() {
+        String login_id = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, getContext());
+        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
             @Override
             public void onResponse(Call<GetAllOrderResponse> call, Response<GetAllOrderResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

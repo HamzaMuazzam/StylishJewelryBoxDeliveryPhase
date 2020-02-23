@@ -26,7 +26,7 @@ public interface WebServices {
     String UPDATEORDERSTATUS = "updateorderstatus.php";
     String UPDATEORDERSTATUSDELIVERED = "movetopending.php";
 
-    String GETORDERNuMERS = "getordersnumberaslist.php";
+    String GETAllPENGINDORDERS = "getordersnumberaslist.php";
     String GETPENDINGORDERS = "getOrderPending.php";
     String GETITEMBYORDERID = "getsingleitemsperorder.php";
     String GETORDERNUMBERDELIVRED = "getallorderdelivered.php";
@@ -59,10 +59,11 @@ public interface WebServices {
 
 
        @FormUrlEncoded
-    @POST(GETORDERNuMERS)
+       @POST(GETAllPENGINDORDERS)
        Call<GetAllOrderResponse> getAllPendingOrders(@Field("clientid") String clientid,
                                                      @Field("orderstatus") String orderstatusid,
-                                                     @Field("area") String area, @Field("orderbydate") String orderbydate);
+                                                     @Field("area") String area, @Field("orderbydate") String orderbydate
+               , @Field("jdb_id") String jdb_id);
 
     //    @FormUrlEncoded
 //    @POST(GETPENDINGORDERS)
@@ -84,10 +85,12 @@ public interface WebServices {
     @FormUrlEncoded
     @POST(UPDATEORDERSTATUSDELIVERED)
     Call<UpdateOrderStatus> updateOrderStatusDelivered(@Field("orderid") String orderid,
-                                              @Field("updateorderstatus") String updateorderstatus,
-                                              @Field("delivered_by") String delivered_by,
-                                              @Field("delivered_date") String delivered_date,
-                                              @Field("delivered_time") String delivered_time);
+                                                       @Field("updateorderstatus") String updateorderstatus,
+                                                       @Field("delivered_by") String delivered_by,
+                                                       @Field("delivered_date") String delivered_date,
+                                                       @Field("delivered_time") String delivered_time,
+                                                       @Field("jdb_id") String jdb_id
+    );
 
 
     @FormUrlEncoded
