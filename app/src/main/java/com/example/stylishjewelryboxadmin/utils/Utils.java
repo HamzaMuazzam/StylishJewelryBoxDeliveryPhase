@@ -57,6 +57,7 @@ public class Utils {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
+
         editor.commit();
         return true;
     }

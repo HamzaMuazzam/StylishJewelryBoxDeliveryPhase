@@ -17,11 +17,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
+            android:visibility="gone"
             android:indeterminateDrawable="@drawable/progressbardrawable"
             android:indeterminateDuration="@android:integer/config_longAnimTime" />
 
         <TextView
             android:id="@+id/tv_splasglogo"
+            android:visibility="gone"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

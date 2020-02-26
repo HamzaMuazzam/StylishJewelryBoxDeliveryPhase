@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -46,7 +47,7 @@ public class LoginActivityActivity extends AppCompatActivity {
     private WebServices webServices;
     private FirebaseAuth mAuth;
     List<GetLoginDetail> list;
-
+    Button btn_login;
     String code;
     String strname;
     String removeLeadingZerosPHONE;
@@ -73,6 +74,49 @@ public class LoginActivityActivity extends AppCompatActivity {
 
     }
 
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback = new
+            PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                @Override
+                public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+                    code = phoneAuthCredential.getSmsCode();
+
+                    if (code != null) {
+                        verify_OTP(code);
+
+
+                        Toast.makeText(LoginActivityActivity.this, "in IF ---onVerificationCompleted\n" + code, Toast.LENGTH_SHORT).show();
+                    } else {
+                        progress_signin.setVisibility(View.GONE);
+
+                        showCustomDialog(LoginActivityActivity.this, "Do you want to safe credentials?");
+                    }
+
+                }
+
+                @Override
+                public void onVerificationFailed(FirebaseException e) {
+
+                    btn_login.setBackgroundResource(R.drawable.button_corner);
+                    btn_login.setEnabled(true);
+                    Toast.makeText(LoginActivityActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+
+                @Override
+                public void onCodeSent(String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    super.onCodeSent(s, forceResendingToken);
+                    CODERECEIVED = s;
+                    Toast.makeText(LoginActivityActivity.this, "Code Sent", Toast.LENGTH_SHORT).show();
+
+                }
+            };
+
+    public void singUpform(View view) {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+
     private void initviews() {
         progress_signin = findViewById(R.id.progress_signin);
         webServices = WebServices.RETROFIT.create(WebServices.class);
@@ -81,11 +125,17 @@ public class LoginActivityActivity extends AppCompatActivity {
         til_phone = findViewById(R.id.tvtilphone);
         ed_name = findViewById(R.id.tvetname);
         ed_phone = findViewById(R.id.tvetphone);
+        btn_login = findViewById(R.id.btn_login);
     }
 
-    public void singUpform(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
-        startActivity(intent);
+    private void sendverificationcode(String phonenumber) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phonenumber,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                mCallback
+        );
     }
 
     @SuppressLint("HardwareIds")
@@ -112,7 +162,8 @@ public class LoginActivityActivity extends AppCompatActivity {
         } else if (strphone.length() < 11) {
             ed_phone.setError("Invalid Number");
         } else {
-
+            btn_login.setBackgroundResource(R.drawable.button_corner1);
+            btn_login.setEnabled(false);
             removeLeadingZerosPHONE = removeLeadingZeros(strphone);
             progress_signin.setVisibility(View.VISIBLE);
             webServices.getLogin("+92" + removeLeadingZerosPHONE, strname).enqueue(new Callback<GetLoginDetailResponse>() {
@@ -144,6 +195,9 @@ public class LoginActivityActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivityActivity.this, "Please Login From Registered Device", Toast.LENGTH_LONG).show();
                                         progress_signin.setVisibility(View.GONE);
 
+                                        btn_login.setBackgroundResource(R.drawable.button_corner);
+                                        btn_login.setEnabled(true);
+
                                     }
 
                                 }
@@ -152,6 +206,9 @@ public class LoginActivityActivity extends AppCompatActivity {
                             }
                         } else {
                             Toast.makeText(LoginActivityActivity.this, "Phone or User Name does not match", Toast.LENGTH_SHORT).show();
+
+                            btn_login.setBackgroundResource(R.drawable.button_corner);
+                            btn_login.setEnabled(true);
                             progress_signin.setVisibility(View.GONE);
 
                         }
@@ -162,56 +219,14 @@ public class LoginActivityActivity extends AppCompatActivity {
                 public void onFailure(Call<GetLoginDetailResponse> call, Throwable t) {
                     progress_signin.setVisibility(View.GONE);
 
+                    btn_login.setBackgroundResource(R.drawable.button_corner);
+                    btn_login.setEnabled(true);
                     Toast.makeText(LoginActivityActivity.this, "on fail " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
         }
     }
-
-    private void sendverificationcode(String phonenumber) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phonenumber,
-                60,
-                TimeUnit.SECONDS,
-                this,
-                mCallback
-        );
-    }
-
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback = new
-            PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                @Override
-                public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-
-                    code = phoneAuthCredential.getSmsCode();
-
-                    if (code != null) {
-                        verify_OTP(code);
-
-                        Toast.makeText(LoginActivityActivity.this, "in IF ---onVerificationCompleted\n" + code, Toast.LENGTH_SHORT).show();
-                    } else {
-                        progress_signin.setVisibility(View.GONE);
-
-                        showCustomDialog(LoginActivityActivity.this, "Do you want to safe credentials?");
-                    }
-
-                }
-
-                @Override
-                public void onVerificationFailed(FirebaseException e) {
-                    Toast.makeText(LoginActivityActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void onCodeSent(String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                    super.onCodeSent(s, forceResendingToken);
-                    CODERECEIVED = s;
-                    Toast.makeText(LoginActivityActivity.this, "Code Sent", Toast.LENGTH_SHORT).show();
-
-                }
-            };
 
     private void verify_OTP(String entered_otp) {
 
