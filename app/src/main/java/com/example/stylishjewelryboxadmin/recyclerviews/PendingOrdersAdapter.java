@@ -104,14 +104,13 @@ public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder>
                 Date todaytime = Calendar.getInstance().getTime();
                 String time = simpleDateFormatfotTime.format(todaytime);
                 String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
-                webServices.updateOrderStatus(orders.getOrdermianid(), "2", loginid, formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
+                webServices.updateOrderStatus(orders.getOrdermianid(), "1", loginid, formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
                     @Override
                     public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             if (response.body().getStatus()) {
-
+                                Toast.makeText(context, "Just Updated ", Toast.LENGTH_SHORT).show();
                                 updateDeliveredOrderFragmment(position);
-
 
 
                             }
@@ -135,7 +134,7 @@ public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder>
 
     private void updateDeliveredOrderFragmment(int pos) {
 
-        webServices.getAllOrderDelivred(AllOrdersActivity.jcdid, "2", AllOrdersActivity.area).enqueue(new Callback<GetAllDeliveredOrderResponse>() {
+        webServices.getAllOrderDelivred(AllOrdersActivity.jcdid, "1", AllOrdersActivity.area).enqueue(new Callback<GetAllDeliveredOrderResponse>() {
 
             @Override
             public void onResponse(Call<GetAllDeliveredOrderResponse> call, Response<GetAllDeliveredOrderResponse> response) {

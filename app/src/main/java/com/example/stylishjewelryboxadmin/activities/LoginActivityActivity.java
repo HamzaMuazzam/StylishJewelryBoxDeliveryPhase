@@ -1,14 +1,11 @@
 package com.example.stylishjewelryboxadmin.activities;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -53,8 +50,8 @@ public class LoginActivityActivity extends AppCompatActivity {
     String removeLeadingZerosPHONE;
     ProgressBar progress_signin;
     private String CODERECEIVED;
+
     @SuppressLint("HardwareIds")
-    String deviceId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,17 +139,6 @@ public class LoginActivityActivity extends AppCompatActivity {
     public void lognIn(View view) {
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Read PHONE State Permission Not Granted ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephonyManager != null) {
-            deviceId = telephonyManager.getDeviceId();
-        }
         String strphone = til_phone.getEditText().getText().toString();
         strname = til_name.getEditText().getText().toString();
         if (TextUtils.isEmpty(strname)) {
@@ -166,6 +152,7 @@ public class LoginActivityActivity extends AppCompatActivity {
             btn_login.setEnabled(false);
             removeLeadingZerosPHONE = removeLeadingZeros(strphone);
             progress_signin.setVisibility(View.VISIBLE);
+
             webServices.getLogin("+92" + removeLeadingZerosPHONE, strname).enqueue(new Callback<GetLoginDetailResponse>() {
                 @Override
                 public void onResponse(Call<GetLoginDetailResponse> call, Response<GetLoginDetailResponse> response) {
@@ -174,33 +161,11 @@ public class LoginActivityActivity extends AppCompatActivity {
                         Boolean status = response.body().getStatus();
                         if (status) {
                             for (int x = 0; x < list.size(); x++) {
-//                                String jdbName = pendinglist.get(x).getJdbName();
-//                                String jdbPhone = pendinglist.get(x).getJdbPhone();
-                                String jdbUid = list.get(x).getJdbUid();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                                        Toast.makeText(LoginActivityActivity.this, "Read PHONE State Permission Not Granted ", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                }
 
-                                TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                                if (telephonyManager != null) {
-                                    deviceId = telephonyManager.getDeviceId();
-                                    if (jdbUid.equalsIgnoreCase(deviceId)) {
-                                        sendverificationcode("+92" + removeLeadingZerosPHONE);
-
-
-                                    } else {
-                                        Toast.makeText(LoginActivityActivity.this, "Please Login From Registered Device", Toast.LENGTH_LONG).show();
-                                        progress_signin.setVisibility(View.GONE);
-
-                                        btn_login.setBackgroundResource(R.drawable.button_corner);
-                                        btn_login.setEnabled(true);
-
-                                    }
-
-                                }
+                                sendverificationcode("+92" + removeLeadingZerosPHONE);
+                                progress_signin.setVisibility(View.GONE);
+                                btn_login.setBackgroundResource(R.drawable.button_corner);
+                                btn_login.setEnabled(true);
 
 
                             }
@@ -261,7 +226,7 @@ public class LoginActivityActivity extends AppCompatActivity {
         builder.setMessage(message);
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", (dialog, which) -> {
-            savecredits(strname, "+92" + removeLeadingZerosPHONE, deviceId);
+            savecredits(strname, "+92" + removeLeadingZerosPHONE);
             Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -269,8 +234,15 @@ public class LoginActivityActivity extends AppCompatActivity {
 
         builder.setNegativeButton("No", (dialog, which) -> {
             String jdbId = list.get(0).getJdbId();
-            Utils.savePreferences(LOGIN_ID, jdbId, this);
-            Utils.savePreferences(NAME, strname, this);
+            SharedPreferences sharedPreferences = this.getSharedPreferences("ForThisApp", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(LOGIN_ID, jdbId);
+            editor.putString(NAME, strname);
+            editor.putString(PHONENUMBER, "+92" + removeLeadingZerosPHONE);
+            editor.putBoolean("STATUS", false);
+            editor.apply();
+
+
             Intent intent = new Intent(LoginActivityActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -280,11 +252,16 @@ public class LoginActivityActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void savecredits(String name, String phonenumber, String uuid) {
-        Utils.savePreferences(NAME, name, this);
-        Utils.savePreferences(PHONENUMBER, phonenumber, this);
-        Utils.savePreferences(UUID, uuid, this);
+    public void savecredits(String name, String phonenumber) {
         String jdbId = list.get(0).getJdbId();
-        Utils.savePreferences(LOGIN_ID, jdbId, this);
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("ForThisApp", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(LoginActivityActivity.NAME, name);
+        editor.putString(PHONENUMBER, "+92" + removeLeadingZerosPHONE);
+        editor.putString(LoginActivityActivity.LOGIN_ID, jdbId);
+        editor.putBoolean("STATUS", true);
+        editor.apply();
+
     }
 }

@@ -53,9 +53,8 @@ public class DeliveredFragment extends Fragment {
 
     public void getDeliveredOrders() {
 
-//        Toast.makeText(getContext(), "" + AllOrdersActivity.jcdid + "2" + AllOrdersActivity.area + AllOrdersActivity.orderbydate, Toast.LENGTH_LONG).show();
 
-        webServices.getAllOrderDelivred(AllOrdersActivity.jcdid, "2", AllOrdersActivity.area).enqueue(new Callback<GetAllDeliveredOrderResponse>() {
+        webServices.getAllOrderDelivred(AllOrdersActivity.jcdid, "1", AllOrdersActivity.area).enqueue(new Callback<GetAllDeliveredOrderResponse>() {
 
             @Override
             public void onResponse(Call<GetAllDeliveredOrderResponse> call, Response<GetAllDeliveredOrderResponse> response) {

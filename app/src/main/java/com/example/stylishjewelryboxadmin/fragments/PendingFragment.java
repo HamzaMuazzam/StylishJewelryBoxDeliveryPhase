@@ -1,6 +1,7 @@
 package com.example.stylishjewelryboxadmin.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,16 @@ public class PendingFragment extends Fragment {
         final String jcdid = AllOrdersActivity.jcdid;
         final String area = AllOrdersActivity.area;
         String login_id = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, getContext());
-        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
+
+
+        Log.d("MYTAG", "getAllOrders: " + jcdid);
+        Log.d("MYTAG", "getAllOrders: " + "0");
+        Log.d("MYTAG", "getAllOrders: " + area);
+        Log.d("MYTAG", "getAllOrders: " + AllOrdersActivity.orderbydate);
+        Log.d("MYTAG", "getAllOrders: " + login_id);
+
+
+        webServices.getAllPendingOrders(jcdid, "0", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
             @Override
             public void onResponse(Call<GetAllOrderResponse> call, Response<GetAllOrderResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

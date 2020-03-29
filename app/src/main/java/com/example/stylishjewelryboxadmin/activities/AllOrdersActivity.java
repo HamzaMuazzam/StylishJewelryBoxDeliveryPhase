@@ -2,6 +2,7 @@ package com.example.stylishjewelryboxadmin.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,6 +17,7 @@ import com.example.stylishjewelryboxadmin.utils.Utils;
 import com.google.android.material.tabs.TabLayout;
 
 public class AllOrdersActivity extends AppCompatActivity {
+    public static final String TAG = "MYTAG";
     Toolbar toolbar;
     WebServices webServices;
     private TabLayout tabLayout;
@@ -64,7 +66,16 @@ public class AllOrdersActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         area = getIntent().getStringExtra("area");
         orderbydate = getIntent().getStringExtra("orderbydate");
+
 //        Toast.makeText(this, jcdid + phone + name + totalorders+"\n"+area, Toast.LENGTH_SHORT).show();
+
+        Log.d(TAG, "getvaluesfromintent: " + jcdid);
+        Log.d(TAG, "getvaluesfromintent: " + phone);
+        Log.d(TAG, "getvaluesfromintent: " + totalorders);
+        Log.d(TAG, "getvaluesfromintent: " + name);
+        Log.d(TAG, "getvaluesfromintent: " + area);
+        Log.d(TAG, "getvaluesfromintent: " + orderbydate);
+
 
 
     }

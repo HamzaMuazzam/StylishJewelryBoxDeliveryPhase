@@ -1,5 +1,6 @@
 package com.example.stylishjewelryboxadmin.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -47,6 +48,8 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
         boolean wifiEnable = Utils.WifiEnable(this);
         if (mobileDataEnable || wifiEnable) {
             progressBar = findViewById(R.id.progress_circularBar);
+
+
 //            progressBar.setVisibility(View.VISIBLE);
             initview();
             calander();
@@ -99,11 +102,15 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
 
     private void getclientsbylocation(String strdate) {
 //        Toast.makeText(getApplicationContext(),"str date :" +strdate,Toast.LENGTH_LONG).show();
-        String login_id = Utils.getPreferences(LOGIN_ID, this);
-        if (areaname != null && login_id != null) {
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("ForThisApp", MODE_PRIVATE);
+        String login_id = sharedPreferences.getString(LOGIN_ID, "");
+
+
+        if (areaname != null && !login_id.equals("")) {
 
             Toast.makeText(this, areaname + "   1  " + strdate + "  " + login_id, Toast.LENGTH_LONG).show();
-            webServices.getclientbylocation(areaname, "1", strdate, login_id).enqueue(new Callback<GetClientsByLocationResponse>() {
+            webServices.getclientbylocation(areaname, "0", strdate, login_id).enqueue(new Callback<GetClientsByLocationResponse>() {
                 @Override
                 public void onResponse(Call<GetClientsByLocationResponse> call, Response<GetClientsByLocationResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {

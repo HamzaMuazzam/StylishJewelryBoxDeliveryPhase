@@ -34,18 +34,13 @@ public interface WebServices {
     String DeliveryBoySignUp = "deliveryboy_singup.php";
     String GETLOGINDETAILS = "getLogin.php";
 
-
-
     Retrofit RETROFIT = new Retrofit.Builder().baseUrl(BASEURL).addConverterFactory(GsonConverterFactory.create()).build();
-
-
-
-
 
     @FormUrlEncoded
     @POST(GETLOCATIONBYCITY)
     Call<GetLocationbyCityResponse> getlocationsbycity(@Field("cityname") String cityname);
-//    @GET(GETMETERIAL)
+
+    //    @GET(GETMETERIAL)
 //    Call<GetAllMeterialCatResponse> getmterialname();
     @FormUrlEncoded
     @POST(GETCLIENT)
@@ -58,12 +53,12 @@ public interface WebServices {
             , @Field("orderbydate") String orderbydate, @Field("jdb_id") String jdb_id);
 
 
-       @FormUrlEncoded
-       @POST(GETAllPENGINDORDERS)
-       Call<GetAllOrderResponse> getAllPendingOrders(@Field("clientid") String clientid,
-                                                     @Field("orderstatus") String orderstatusid,
-                                                     @Field("area") String area, @Field("orderbydate") String orderbydate
-               , @Field("jdb_id") String jdb_id);
+    @FormUrlEncoded
+    @POST(GETAllPENGINDORDERS)
+    Call<GetAllOrderResponse> getAllPendingOrders(@Field("clientid") String clientid,
+                                                  @Field("orderstatus") String orderstatusid,
+                                                  @Field("area") String area, @Field("orderbydate") String orderbydate
+            , @Field("jdb_id") String jdb_id);
 
     //    @FormUrlEncoded
 //    @POST(GETPENDINGORDERS)
@@ -72,7 +67,8 @@ public interface WebServices {
 //                                                  @Field("orderid") String orderid );
     @FormUrlEncoded
     @POST(GETITEMBYORDERID)
-    Call<GetItemByOrderIDResponse> getItemsByOrderID(@Field("orderid") String orderid );
+    Call<GetItemByOrderIDResponse> getItemsByOrderID(@Field("orderid") String orderid);
+
     @FormUrlEncoded
     @POST(UPDATEORDERSTATUS)
     Call<UpdateOrderStatus> updateOrderStatus(@Field("orderid") String orderid,

@@ -1,27 +1,17 @@
 package com.example.stylishjewelryboxadmin.activities;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.stylishjewelryboxadmin.R;
-import com.example.stylishjewelryboxadmin.utils.Utils;
-
-import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.NAME;
-import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.PHONENUMBER;
-import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.UUID;
 
 public class SplashActivity extends AppCompatActivity {
     ProgressBar progressBar;
@@ -35,17 +25,21 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         //here we have to call a predefine method to request permission
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
             initviews();
             handler();
-        } else {
 
-            checkReadPhoneStatePermission();
-
-        }
 
     }
 
+    private void initviews() {
+        progressBar = findViewById(R.id.progress_splash);
+        tv_splasglogo = findViewById(R.id.tv_splasglogo);
+        progressBar.setVisibility(View.VISIBLE);
+        tv_splasglogo.setVisibility(View.VISIBLE);
+
+    }
+
+/*
     private void checkReadPhoneStatePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.READ_PHONE_STATE)) {
@@ -60,18 +54,25 @@ public class SplashActivity extends AppCompatActivity {
         }
 
     }
+*/
 
     private void handler() {
-        new Handler().postDelayed(() ->
-                        checklogindetails(),
+        new Handler().postDelayed(this::checklogindetails,
                 2000);
     }
 
     private void checklogindetails() {
-        String uuid = Utils.getPreferences(UUID, this);
-        String number = Utils.getPreferences(PHONENUMBER, this);
-        String name = Utils.getPreferences(NAME, this);
-        if (!uuid.equalsIgnoreCase("null") && !name.equalsIgnoreCase("null") && !number.equalsIgnoreCase("null")) {
+//        String uuid = Utils.getPreferences(UUID, this);
+
+        SharedPreferences sharedPref = this.getSharedPreferences("ForThisApp", Context.MODE_PRIVATE);
+        String name = sharedPref.getString(LoginActivityActivity.NAME, "");
+        String number = sharedPref.getString(LoginActivityActivity.PHONENUMBER, "");
+//        String user_id = sharedPref.getString(LoginActivityActivity.LOGIN_ID, "");
+
+        boolean status = sharedPref.getBoolean("STATUS", false);
+
+
+        if (name != "" && number != "" && status) {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -83,24 +84,5 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void initviews() {
-        progressBar = findViewById(R.id.progress_splash);
-        tv_splasglogo = findViewById(R.id.tv_splasglogo);
-        progressBar.setVisibility(View.VISIBLE);
-        tv_splasglogo.setVisibility(View.VISIBLE);
 
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_REQ_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initviews();
-                handler();
-            } else {
-                Toast.makeText(this, "You can't Run app without permission", Toast.LENGTH_LONG).show();
-            }
-        }
-
-    }
 }

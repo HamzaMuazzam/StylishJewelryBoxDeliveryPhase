@@ -1,13 +1,8 @@
 package com.example.stylishjewelryboxadmin.activities;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -44,7 +39,6 @@ public class SignUpActivity extends AppCompatActivity {
     String formatedDate;
     private FirebaseAuth mAuth;
     ProgressBar progress_signup;
-    String deviceId = null;
     String strname;
     String phone;
 
@@ -80,25 +74,10 @@ public class SignUpActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    @SuppressLint("HardwareIds")
     public void singUp(View view) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
 
         formatedDate = simpleDateFormat.format(new Date());
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Read PHONE State Permission Not Granted ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
-
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephonyManager != null) {
-            deviceId = telephonyManager.getDeviceId();
-        }
 
 
         strname = til_name.getEditText().getText().toString();
@@ -165,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(SignUpActivity.this, "in IF ---onVerificationCompleted\n" + code, Toast.LENGTH_SHORT).show();
                     } else {
 
-                        singnUpAPI(deviceId, strname, formatedDate, phone);
+                        singnUpAPI(strname, formatedDate, phone);
                     }
                 }
 
@@ -195,7 +174,7 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
 
-                        singnUpAPI(deviceId, strname, formatedDate, phone);
+                        singnUpAPI(strname, formatedDate, phone);
 
 
                     } else {
@@ -204,8 +183,8 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
-    public void singnUpAPI(String deviceID, String name, String date, String phone) {
-        webServices.deliveryBoySignUp(deviceID, name, "null", "null", "null", "null", date
+    public void singnUpAPI(String name, String date, String phone) {
+        webServices.deliveryBoySignUp(null, name, "null", "null", "null", "null", date
                 , "+92" + phone, "0").enqueue(new Callback<DeliveryBoysignup>() {
             @Override
             public void onResponse(Call<DeliveryBoysignup> call, Response<DeliveryBoysignup> response) {

@@ -1,6 +1,8 @@
 package com.example.stylishjewelryboxadmin.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,7 +25,10 @@ import com.example.stylishjewelryboxadmin.networkAPis.getlocationcity.GetLocatio
 import com.example.stylishjewelryboxadmin.networkAPis.getlocationcity.GetLocationbyCityResponse;
 import com.example.stylishjewelryboxadmin.utils.Utils;
 import com.example.stylishjewelryboxadmin.utils.Veriables;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -66,10 +72,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         iv_logout.setOnClickListener(v -> {
 
-            Utils.savePreferences(LoginActivityActivity.NAME, "null", this);
-            Utils.savePreferences(LoginActivityActivity.PHONENUMBER, "null", this);
-            Utils.savePreferences(LoginActivityActivity.UUID, "null", this);
-            Utils.savePreferences(LoginActivityActivity.LOGIN_ID, null, this);
+            SharedPreferences sharedPreferences = this.getSharedPreferences("ForThisApp", Context.MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString(LoginActivityActivity.NAME, null);
+            editor.putString(LoginActivityActivity.PHONENUMBER, null);
+            editor.putString(LoginActivityActivity.LOGIN_ID, null);
+            editor.putBoolean("STATUS", false);
+
+            editor.apply();
+
 
             Intent intent = new Intent(MainActivity.this, LoginActivityActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -77,6 +90,52 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
     }
+
+    private void initviews() {
+
+
+        toolbar = findViewById(R.id.toolbar_name);
+        iv_logout = findViewById(R.id.iv_logout);
+        tv_username_delivry = findViewById(R.id.tv_username_delivry);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("");
+
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("ForThisApp", MODE_PRIVATE);
+        String name = sharedPreferences.getString(LoginActivityActivity.NAME, "");
+        String ID = sharedPreferences.getString(LoginActivityActivity.LOGIN_ID, "");
+        Toast.makeText(this, "ID is: " + ID, Toast.LENGTH_SHORT).show();
+        FirebaseMessaging.getInstance().subscribeToTopic(ID).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful())
+                    Toast.makeText(MainActivity.this, "Topic Subscribed", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, "Subscription failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        tv_username_delivry.setText("Logged in as " + name);
+
+        btn_getorders = findViewById(R.id.btn_getorder);
+        webServices = WebServices.RETROFIT.create(WebServices.class);
+        spinner = findViewById(R.id.order_spiner);
+        progressBar = findViewById(R.id.progress_circularBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+    }
+
+
+//    public String removeLeadingPlus(String digits) {
+//        //String.format("%.0f", Double.parseDouble(digits)) //Alternate Solution
+////        String regex = "^"+"+";
+////        return digits.replaceAll(regex, "");
+//        StringBuffer buffer = new StringBuffer(digits);
+//        StringBuffer buffer1 = buffer.deleteCharAt(0);
+//        return buffer1.toString();
+//    }
+
 
 //    private void arraystest() {
 //        int[] array1 = {1, 2, 3};
@@ -88,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //        System.arraycopy(array2, 0, result, aLen, bLen);
 //        String s = Arrays.toString(result);
 //        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+
 //    }
 
     private void webservice() {
@@ -124,25 +184,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
-    private void initviews() {
-
-
-        toolbar = findViewById(R.id.toolbar_name);
-        iv_logout = findViewById(R.id.iv_logout);
-        tv_username_delivry = findViewById(R.id.tv_username_delivry);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle("");
-        String name = Utils.getPreferences(LoginActivityActivity.NAME, this);
-        tv_username_delivry.setText("Logged in as " + name);
-
-        btn_getorders = findViewById(R.id.btn_getorder);
-        webServices = WebServices.RETROFIT.create(WebServices.class);
-        spinner = findViewById(R.id.order_spiner);
-        progressBar = findViewById(R.id.progress_circularBar);
-        progressBar.setVisibility(View.VISIBLE);
-
-    }
-
     private void spinnerwork() {
         //String colors[] = {"Select Location", "Blue", "White", "Yellow", "Black", "Green", "Purple", "Orange", "Grey"};
 
@@ -159,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         System.arraycopy(locationarray2, 0, new_array, 0, length2);
         System.arraycopy(locationarray1, 0, new_array, length2, length1);
         int length = new_array.length;
-        Toast.makeText(this, String.valueOf(length), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, String.valueOf(length), Toast.LENGTH_SHORT).show();
 
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new_array);

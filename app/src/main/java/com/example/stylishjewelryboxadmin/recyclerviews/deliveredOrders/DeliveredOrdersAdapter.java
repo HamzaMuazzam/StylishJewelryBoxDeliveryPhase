@@ -68,7 +68,7 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
             builder.setPositiveButton("Yes", (dialog, which) -> {
                 String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
                 DeliveredFragment.progressBar.setVisibility(View.VISIBLE);
-                webServices.updateOrderStatusDelivered(model.getOrdermianid(), "1",
+                webServices.updateOrderStatusDelivered(model.getOrdermianid(), "0",
                         "0", "none", "none", loginid)
                         .enqueue(new Callback<UpdateOrderStatus>() {
                             @Override
@@ -110,7 +110,7 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
     }
 
     private void getAllPendingOrdersToUpdate_PendingFragment(int position, String login_id) {
-        webServices.getAllPendingOrders(jcdid, "1", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
+        webServices.getAllPendingOrders(jcdid, "0", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
             @Override
             public void onResponse(Call<GetAllOrderResponse> call, Response<GetAllOrderResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -122,11 +122,8 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
                         PendingFragment.recyclerView_pendingorder.setLayoutManager(new LinearLayoutManager(context));
                         PendingFragment.progressBar.setVisibility(View.GONE);
                         DeliveredFragment.progressBar.setVisibility(View.GONE);
-
                         deliveredOrderAdapterlist.remove(position);
                         notifyDataSetChanged();
-
-
                     }
 
                 }
