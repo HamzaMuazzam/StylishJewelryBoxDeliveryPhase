@@ -33,11 +33,8 @@ public class OrderByNotificationActivity extends AppCompatActivity {
             boolean status = sharedPreferences.getBoolean("STATUS", false);
             if (status) {
                 card_clicktoMainScreen.setVisibility(View.VISIBLE);
-
                 tv_NameForNotiScren.setText(sharedPreferences.getString(LoginActivityActivity.NAME, ""));
-
                 tv_IDForNotiScren.setText(sharedPreferences.getString(LoginActivityActivity.LOGIN_ID, ""));
-
                 tv_TotalForNotiScren.setText(totalorders);
                 tv_LocationForNotiScren.setText(location);
                 tv_DateForNotiScren.setText(date);
