@@ -104,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Geocoder geocoder = null;
         geocoder = new Geocoder(this, Locale.getDefault());
+
         // add 1 for single reszult
         // this method is for human readable address to latitudes and longitudes
 
