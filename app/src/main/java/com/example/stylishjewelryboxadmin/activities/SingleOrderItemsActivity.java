@@ -2,25 +2,31 @@ package com.example.stylishjewelryboxadmin.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
 import com.example.stylishjewelryboxadmin.recyclerviews.singleitemsbyordernumber.GetItemByOrderID;
 import com.example.stylishjewelryboxadmin.recyclerviews.singleitemsbyordernumber.GetItemByOrderIDResponse;
 import com.example.stylishjewelryboxadmin.recyclerviews.singleitemsbyordernumber.GetItemsAdapter;
+
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SingleOrderItemsActivity extends AppCompatActivity {
+    public static final String TAG = "MYTAG";
     WebServices webServices;
     private RecyclerView recyclerView;
     private GetItemsAdapter getItemsAdapter;
@@ -35,7 +41,6 @@ public class SingleOrderItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_single_order_items);
         initviews();
         getvalues();
-        getitems();
     }
 
     private void initviews() {
@@ -61,48 +66,59 @@ public class SingleOrderItemsActivity extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
         time = getIntent().getStringExtra("time");
 
+        Log.d(TAG, "getvalues: " + ordernumber + "\n" + totalitems + "\n" + totalprice + "\n" + date);
+        getitems();
+
     }
 
+
     private void getitems() {
+
         webServices.getItemsByOrderID(ordernumber).enqueue(new Callback<GetItemByOrderIDResponse>() {
             @Override
             public void onResponse(Call<GetItemByOrderIDResponse> call, Response<GetItemByOrderIDResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getStatus()) {
-                    List<GetItemByOrderID> getItemByOrderIDlist = response.body().getGetItemByOrderID();
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        List<GetItemByOrderID> getItemByOrderIDlist = response.body().getGetItemByOrderID();
 
-                    getItemsAdapter = new GetItemsAdapter(SingleOrderItemsActivity.this, getItemByOrderIDlist);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(SingleOrderItemsActivity.this));
-                    recyclerView.setAdapter(getItemsAdapter);
+                        getItemsAdapter = new GetItemsAdapter(SingleOrderItemsActivity.this, getItemByOrderIDlist);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(SingleOrderItemsActivity.this));
+                        recyclerView.setAdapter(getItemsAdapter);
 
-                    getItemsAdapter.notifyDataSetChanged();
-                    tv_onumber.setText(ordernumber);
-                    tv_o_totalprice.setText(totalprice);
-                    tv_o_total_items.setText(totalitems);
-                    tv_o_date.setText(date);
-                    tv_o_time.setText(time);
-                    progressBar.setVisibility(View.GONE);
+                        getItemsAdapter.notifyDataSetChanged();
+                        tv_onumber.setText(ordernumber);
+                        tv_o_totalprice.setText(totalprice);
+                        tv_o_total_items.setText(totalitems);
+                        tv_o_date.setText(date);
+                        tv_o_time.setText(time);
+                        progressBar.setVisibility(View.GONE);
 
-                    btn_gotomap.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String location = GetItemsAdapter.location;
-                            String jomdLatitude = GetItemsAdapter.jomdLatitude;
-                            String jomdLongitude = GetItemsAdapter.jomdLongitude;
-                            if (!jomdLatitude.equalsIgnoreCase("0.0") || jomdLongitude.equalsIgnoreCase("0.0")) {
+                        btn_gotomap.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String location = GetItemsAdapter.location;
+                                String jomdLatitude = GetItemsAdapter.jomdLatitude;
+                                String jomdLongitude = GetItemsAdapter.jomdLongitude;
+
+
                                 Intent intent = new Intent(SingleOrderItemsActivity.this, MapsActivity.class);
                                 intent.putExtra("lat", jomdLatitude).putExtra("lng", jomdLongitude).putExtra("location", location);
                                 startActivity(intent);
+
+
                             }
-                            else {
-                                Toast.makeText(SingleOrderItemsActivity.this, jomdLatitude+"\n"+jomdLongitude, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                        });
+
+
+                    } else {
+                        Toast.makeText(SingleOrderItemsActivity.this, "false", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<GetItemByOrderIDResponse> call, Throwable t) {
+                Toast.makeText(SingleOrderItemsActivity.this, "" + t.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });

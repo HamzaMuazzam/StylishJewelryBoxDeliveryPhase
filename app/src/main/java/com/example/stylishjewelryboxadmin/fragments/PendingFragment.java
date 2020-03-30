@@ -1,5 +1,6 @@
 package com.example.stylishjewelryboxadmin.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,12 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
-import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrder;
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrderResponse;
 import com.example.stylishjewelryboxadmin.recyclerviews.PendingOrdersAdapter;
-import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.LOGIN_ID;
 
 public class PendingFragment extends Fragment {
     private View view;
@@ -66,7 +69,9 @@ public class PendingFragment extends Fragment {
     private void getAllOrders() {
         final String jcdid = AllOrdersActivity.jcdid;
         final String area = AllOrdersActivity.area;
-        String login_id = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, getContext());
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("ForThisApp", MODE_PRIVATE);
+        String login_id = sharedPreferences.getString(LOGIN_ID, "");
 
 
         Log.d("MYTAG", "getAllOrders: " + jcdid);
@@ -75,6 +80,8 @@ public class PendingFragment extends Fragment {
         Log.d("MYTAG", "getAllOrders: " + AllOrdersActivity.orderbydate);
         Log.d("MYTAG", "getAllOrders: " + login_id);
 
+
+        Toast.makeText(getActivity(), "" + jcdid + area + AllOrdersActivity.orderbydate + "\n Login id: " + login_id, Toast.LENGTH_LONG).show();
 
         webServices.getAllPendingOrders(jcdid, "0", area, AllOrdersActivity.orderbydate, login_id).enqueue(new Callback<GetAllOrderResponse>() {
             @Override

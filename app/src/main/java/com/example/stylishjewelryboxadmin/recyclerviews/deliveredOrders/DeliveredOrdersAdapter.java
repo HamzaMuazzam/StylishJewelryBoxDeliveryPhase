@@ -2,6 +2,7 @@ package com.example.stylishjewelryboxadmin.recyclerviews.deliveredOrders;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
-import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.fragments.DeliveredFragment;
 import com.example.stylishjewelryboxadmin.fragments.PendingFragment;
 import com.example.stylishjewelryboxadmin.networkAPis.WebServices;
@@ -22,7 +22,6 @@ import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrde
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrderResponse;
 import com.example.stylishjewelryboxadmin.networkAPis.updateorderstatus.UpdateOrderStatus;
 import com.example.stylishjewelryboxadmin.recyclerviews.PendingOrdersAdapter;
-import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.util.List;
 
@@ -30,8 +29,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.stylishjewelryboxadmin.activities.AllOrdersActivity.area;
 import static com.example.stylishjewelryboxadmin.activities.AllOrdersActivity.jcdid;
+import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.LOGIN_ID;
 
 public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrdersViewHolder> {
     private Context context;
@@ -66,16 +67,19 @@ public class DeliveredOrdersAdapter extends RecyclerView.Adapter<DeliveredOrders
             builder.setMessage("Are you sure to want to move in Pending orders?");
             builder.setCancelable(true);
             builder.setPositiveButton("Yes", (dialog, which) -> {
-                String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
+
+                SharedPreferences sharedPreferences = context.getSharedPreferences("ForThisApp", MODE_PRIVATE);
+                String login_id = sharedPreferences.getString(LOGIN_ID, "");
+
                 DeliveredFragment.progressBar.setVisibility(View.VISIBLE);
+
                 webServices.updateOrderStatusDelivered(model.getOrdermianid(), "0",
-                        "0", "none", "none", loginid)
+                        "0", "none", "none", login_id)
                         .enqueue(new Callback<UpdateOrderStatus>() {
                             @Override
                             public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
                                 if (response.isSuccessful() && response.body() != null) {
                                     if (response.body().getStatus()) {
-                                        String login_id = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
                                         Toast.makeText(context, "Moved", Toast.LENGTH_SHORT).show();
 
                                         getAllPendingOrdersToUpdate_PendingFragment(position, login_id);

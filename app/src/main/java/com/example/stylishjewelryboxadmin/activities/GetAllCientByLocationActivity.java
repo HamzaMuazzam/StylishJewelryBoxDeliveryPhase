@@ -110,6 +110,7 @@ public class GetAllCientByLocationActivity extends AppCompatActivity {
         if (areaname != null && !login_id.equals("")) {
 
             Toast.makeText(this, areaname + "   1  " + strdate + "  " + login_id, Toast.LENGTH_LONG).show();
+
             webServices.getclientbylocation(areaname, "0", strdate, login_id).enqueue(new Callback<GetClientsByLocationResponse>() {
                 @Override
                 public void onResponse(Call<GetClientsByLocationResponse> call, Response<GetClientsByLocationResponse> response) {

@@ -38,7 +38,6 @@ public class OrderByNotificationActivity extends AppCompatActivity {
                 tv_TotalForNotiScren.setText(totalorders);
                 tv_LocationForNotiScren.setText(location);
                 tv_DateForNotiScren.setText(date);
-
             }
             {
                 Toast.makeText(this, "Please Login to see Details", Toast.LENGTH_SHORT).show();

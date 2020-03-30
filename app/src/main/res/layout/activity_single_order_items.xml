@@ -60,7 +60,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:text="5"
+                        android:text="XXX"
                         android:textSize="15sp" />
 
                 </RelativeLayout>
@@ -82,7 +82,7 @@
                         android:textSize="15sp"
                         android:id="@+id/tv_o_total_items"
                         android:layout_alignParentEnd="true"
-                        android:text="15" />
+                        android:text="XXX" />
 
                 </RelativeLayout>
 
@@ -106,7 +106,7 @@
                         android:textSize="15sp"
                         android:id="@+id/tv_o_date"
                         android:layout_alignParentEnd="true"
-                        android:text="20-10-20" />
+                        android:text="XX-XX-XX" />
 
                 </RelativeLayout>
 
@@ -130,7 +130,7 @@
                         android:textSize="15sp"
                         android:id="@+id/tv_o_time"
                         android:layout_alignParentEnd="true"
-                        android:text="12:12:12" />
+                        android:text="XXX" />
 
                 </RelativeLayout>
                 <RelativeLayout
@@ -151,7 +151,7 @@
                         android:textSize="15sp"
                         android:id="@+id/tv_o_totalprice"
                         android:layout_alignParentEnd="true"
-                        android:text="1000" />
+                        android:text="XXX-XXX-XXX" />
 
                 </RelativeLayout>
 

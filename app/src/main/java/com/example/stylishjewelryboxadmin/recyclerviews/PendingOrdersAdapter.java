@@ -3,6 +3,7 @@ package com.example.stylishjewelryboxadmin.recyclerviews;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadmin.R;
 import com.example.stylishjewelryboxadmin.activities.AllOrdersActivity;
-import com.example.stylishjewelryboxadmin.activities.LoginActivityActivity;
 import com.example.stylishjewelryboxadmin.activities.SingleOrderItemsActivity;
 import com.example.stylishjewelryboxadmin.fragments.DeliveredFragment;
 import com.example.stylishjewelryboxadmin.fragments.PendingFragment;
@@ -24,7 +24,6 @@ import com.example.stylishjewelryboxadmin.networkAPis.deliveredOrdersNumbers.Get
 import com.example.stylishjewelryboxadmin.networkAPis.getordernumbers.GetAllOrder;
 import com.example.stylishjewelryboxadmin.networkAPis.updateorderstatus.UpdateOrderStatus;
 import com.example.stylishjewelryboxadmin.recyclerviews.deliveredOrders.DeliveredOrdersAdapter;
-import com.example.stylishjewelryboxadmin.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,6 +34,9 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.example.stylishjewelryboxadmin.activities.LoginActivityActivity.LOGIN_ID;
 
 public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder> {
     private Context context;
@@ -103,8 +105,11 @@ public class PendingOrdersAdapter extends RecyclerView.Adapter<GetSetViewHolder>
                 SimpleDateFormat simpleDateFormatfotTime = new SimpleDateFormat("hh:mm:ss a");
                 Date todaytime = Calendar.getInstance().getTime();
                 String time = simpleDateFormatfotTime.format(todaytime);
-                String loginid = Utils.getPreferences(LoginActivityActivity.LOGIN_ID, context);
-                webServices.updateOrderStatus(orders.getOrdermianid(), "1", loginid, formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
+
+                SharedPreferences sharedPreferences = context.getSharedPreferences("ForThisApp", MODE_PRIVATE);
+                String login_id = sharedPreferences.getString(LOGIN_ID, "");
+
+                webServices.updateOrderStatus(orders.getOrdermianid(), "1", login_id, formatedDate, time).enqueue(new Callback<UpdateOrderStatus>() {
                     @Override
                     public void onResponse(Call<UpdateOrderStatus> call, Response<UpdateOrderStatus> response) {
                         if (response.isSuccessful() && response.body() != null) {
